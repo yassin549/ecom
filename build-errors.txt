@@ -1,0 +1,48 @@
+﻿
+> ecommerce-store@0.1.0 build
+> next build
+
+   Ôû▓ Next.js 16.0.0 (Turbopack)
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ┬À optimizePackageImports
+
+   Creating an optimized production build ...
+ Ô£ô Compiled successfully in 3.5min
+   Running TypeScript ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+npm :  Ô¿» useSearchParams() should be wrapped in a suspense boundary at page 
+"/admin/login". Read more: 
+https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+Au caractère Ligne:1 : 1
++ npm run build 2>&1 | Out-File -FilePath build-errors.txt -Encoding ut ...
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Ô¿» useSearchP...ith-csr-bailout:St 
+   ring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at S (C:\Users\khoua\OneDrive\Desktop\e-com\.next\server\chunks\ssr\node_modul
+es_next_60966932._.js:2:2111)
+    at p (C:\Users\khoua\OneDrive\Desktop\e-com\.next\server\chunks\ssr\node_modul
+es_next_60966932._.js:4:4847)
+    at f (C:\Users\khoua\OneDrive\Desktop\e-com\.next\server\chunks\ssr\_9555ac5b.
+_.js:1:15645)
+    at ir (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:84433)
+    at ia (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:86252)
+    at ia (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:104739)
+    at il (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:107981)
+    at is (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:105399)
+    at ia (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:104353)
+    at il (C:\Users\khoua\OneDrive\Desktop\e-com\node_modules\next\dist\compiled\n
+ext-server\app-page-turbo.runtime.prod.js:2:107981)
+Error occurred prerendering page "/admin/login". Read more: 
+https://nextjs.org/docs/messages/prerender-error
+Export encountered an error on /admin/login/page: /admin/login, exiting the build.
+ Ô¿» Next.js build worker exited with code: 1 and signal: null

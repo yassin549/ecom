@@ -1,0 +1,322 @@
+"use client"
+
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
+import { useVirtualizer } from "@tanstack/react-virtual"
+import { useRef } from "react"
+import { Package, ShoppingBag, User, MapPin, Calendar } from "lucide-react"
+import { formatPrice } from "@/lib/currency"
+import { useCartStore } from "@/lib/store/cart-store"
+
+type Order = {
+  id: string
+  date: string
+  status: string
+  total: number
+  items: Array<{
+    id: string
+    name: string
+    quantity: number
+    price: number
+    image?: string
+  }>
+}
+
+export default function ProfilePage() {
+  const [activeTab, setActiveTab] = useState<"orders" | "info">("orders")
+  const addItem = useCartStore((state) => state.addItem)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  // Fetch user orders
+  const { data: ordersData, isLoading } = useQuery({
+    queryKey: ["user-orders"],
+    queryFn: async () => {
+      // Mock user orders
+      const orders: Order[] = Array.from({ length: 50 }, (_, i) => ({
+        id: `ORD-${String(i + 1).padStart(6, "0")}`,
+        date: new Date(Date.now() - i * 86400000 * 3).toISOString(),
+        status: ["delivered", "shipped", "processing"][i % 3],
+        total: Math.random() * 500 + 100,
+        items: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
+          id: `item-${i}-${j}`,
+          name: `Produit ${j + 1}`,
+          quantity: Math.floor(Math.random() * 2) + 1,
+          price: Math.random() * 200 + 50,
+        })),
+      }))
+      return orders
+    },
+  })
+
+  const orders = ordersData || []
+
+  // Virtualization for long order lists
+  const rowVirtualizer = useVirtualizer({
+    count: orders.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 200,
+    overscan: 5,
+  })
+
+  const handleReorder = (order: Order) => {
+    order.items.forEach((item) => {
+      // Add item once, then update quantity
+      addItem({
+        id: item.id,
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image || '',
+      })
+      // Update to correct quantity if more than 1
+      if (item.quantity > 1) {
+        updateQuantity(item.id, item.quantity)
+      }
+    })
+
+    // Show success toast
+    alert(`${order.items.length} article(s) ajouté(s) au panier!`)
+  }
+
+  const statusColors = {
+    delivered: "bg-green-100 text-green-700",
+    shipped: "bg-blue-100 text-blue-700",
+    processing: "bg-yellow-100 text-yellow-700",
+    pending: "bg-gray-100 text-gray-700",
+    cancelled: "bg-red-100 text-red-700",
+  }
+
+  const statusLabels = {
+    delivered: "Livré",
+    shipped: "Expédié",
+    processing: "En cours",
+    pending: "En attente",
+    cancelled: "Annulé",
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Header */}
+        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg p-8 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center">
+              <User className="h-10 w-10 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Mon Profil</h1>
+              <p className="text-gray-600 mt-1">demo@example.com</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg overflow-hidden">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+                activeTab === "orders"
+                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Package className="h-5 w-5" />
+                Mes Commandes
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab("info")}
+              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+                activeTab === "info"
+                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <User className="h-5 w-5" />
+                Informations
+              </div>
+            </button>
+          </div>
+
+          <div className="p-6">
+            {activeTab === "orders" ? (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Historique des Commandes
+                </h2>
+
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p className="text-gray-600">Chargement...</p>
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">Aucune commande pour le moment</p>
+                  </div>
+                ) : (
+                  <div
+                    ref={parentRef}
+                    className="h-[600px] overflow-auto"
+                    style={{ contain: "strict" }}
+                  >
+                    <div
+                      style={{
+                        height: `${rowVirtualizer.getTotalSize()}px`,
+                        width: "100%",
+                        position: "relative",
+                      }}
+                    >
+                      {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const order = orders[virtualRow.index]
+                        return (
+                          <motion.div
+                            key={order.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: `${virtualRow.size}px`,
+                              transform: `translateY(${virtualRow.start}px)`,
+                            }}
+                          >
+                            <div className="p-4 bg-gray-50 rounded-xl mb-4">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <div className="font-bold text-gray-900 mb-1">
+                                    {order.id}
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-4 w-4" />
+                                      {new Date(order.date).toLocaleDateString("fr-FR")}
+                                    </span>
+                                    <span
+                                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                        statusColors[order.status as keyof typeof statusColors]
+                                      }`}
+                                    >
+                                      {statusLabels[order.status as keyof typeof statusLabels]}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="font-bold text-indigo-600 text-lg">
+                                    {formatPrice(order.total)}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {order.items.length} article(s)
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2 mb-4">
+                                {order.items.map((item) => (
+                                  <div
+                                    key={item.id}
+                                    className="flex justify-between items-center text-sm"
+                                  >
+                                    <span className="text-gray-700">{item.name}</span>
+                                    <span className="text-gray-600">
+                                      x{item.quantity} - {formatPrice(item.price * item.quantity)}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => handleReorder(order)}
+                                className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+                              >
+                                Commander à nouveau
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Informations Personnelles
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Nom</label>
+                    <input
+                      type="text"
+                      defaultValue="Jean Dupont"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      defaultValue="demo@example.com"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Téléphone</label>
+                    <input
+                      type="tel"
+                      defaultValue="+216 12 345 678"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Ville</label>
+                    <input
+                      type="text"
+                      defaultValue="Tunis"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Adresse
+                  </label>
+                  <textarea
+                    rows={3}
+                    defaultValue="123 Avenue Habib Bourguiba, Tunis 1000"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none resize-none"
+                  />
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
+                >
+                  Enregistrer les modifications
+                </motion.button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
