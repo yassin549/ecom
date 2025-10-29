@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', '@tanstack/react-table'],
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   poweredByHeader: false,
   compress: true,
