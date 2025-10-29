@@ -1,13 +1,23 @@
-import { sql } from '@vercel/postgres'
 import { prisma } from './prisma'
 
 // Detect if running on Vercel
 const isVercel = process.env.VERCEL === '1'
 
+// Lazy-load sql to avoid build-time connection issues
+let _sql: any = null
+const getSql = async () => {
+  if (!_sql) {
+    const { sql } = await import('@vercel/postgres')
+    _sql = sql
+  }
+  return _sql
+}
+
 export const db = {
   // Products
   async getProducts(limit?: number) {
     if (isVercel) {
+      const sql = await getSql()
       const query = limit 
         ? sql`SELECT * FROM "Product" LIMIT ${limit}`
         : sql`SELECT * FROM "Product"`
@@ -21,6 +31,7 @@ export const db = {
 
   async getProductById(id: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Product" WHERE id = ${id}`
       return rows[0] || null
     }
@@ -31,6 +42,7 @@ export const db = {
 
   async getProductBySlug(slug: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Product" WHERE slug = ${slug}`
       return rows[0] || null
     }
@@ -41,6 +53,7 @@ export const db = {
 
   async searchProducts(query: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`
         SELECT * FROM "Product" 
         WHERE name ILIKE ${`%${query}%`} 
@@ -61,6 +74,7 @@ export const db = {
   // Categories
   async getCategories() {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Category"`
       return rows
     }
@@ -69,6 +83,7 @@ export const db = {
 
   async getCategoryBySlug(slug: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Category" WHERE slug = ${slug}`
       return rows[0] || null
     }
@@ -80,6 +95,7 @@ export const db = {
   // Orders
   async getOrders() {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Order" ORDER BY "createdAt" DESC`
       return rows
     }
@@ -90,6 +106,7 @@ export const db = {
 
   async getOrderById(id: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "Order" WHERE id = ${id}`
       return rows[0] || null
     }
@@ -100,6 +117,7 @@ export const db = {
 
   async createOrder(data: any) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`
         INSERT INTO "Order" (id, "userId", total, status, "createdAt", "updatedAt")
         VALUES (${data.id}, ${data.userId}, ${data.total}, ${data.status}, NOW(), NOW())
@@ -115,6 +133,7 @@ export const db = {
   // Users
   async getUserByEmail(email: string) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`SELECT * FROM "User" WHERE email = ${email}`
       return rows[0] || null
     }
@@ -125,6 +144,7 @@ export const db = {
 
   async createUser(data: any) {
     if (isVercel) {
+      const sql = await getSql()
       const { rows } = await sql`
         INSERT INTO "User" (id, email, name, password, "createdAt", "updatedAt")
         VALUES (${data.id}, ${data.email}, ${data.name}, ${data.password}, NOW(), NOW())
