@@ -1,6 +1,6 @@
 import { HeroModern } from "@/components/home/hero-modern"
 import { FeaturedProducts } from "@/components/home/featured-products"
-import { createPool } from '@vercel/postgres'
+import { db } from '@/lib/vercel-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -22,13 +22,8 @@ type Product = {
 }
 
 export default async function Home() {
-  // Create connection pool with pooled connection string
-  const pool = createPool({
-    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
-  })
-
   // Fetch featured products dynamically using Vercel Postgres
-  const { rows } = await pool.sql`
+  const { rows } = await db.sql`
     SELECT p.id, p.name, p.slug, p.price, p.image, p.rating, 
            p."reviewCount", p.stock,
            json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
