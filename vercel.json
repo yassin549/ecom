@@ -52,7 +52,7 @@
       ]
     },
     {
-      "source": "/(.*).(?:jpg|jpeg|png|gif|webp|avif|svg)",
+      "source": "/images/:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -74,10 +74,6 @@
       "destination": "/api/sitemap"
     }
   ],
-  "env": {
-    "NEXT_PUBLIC_APP_URL": "@app_url",
-    "DATABASE_URL": "@database_url"
-  },
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
@@ -95,7 +91,7 @@
     },
     {
       "path": "/api/cron/analytics",
-      "schedule": "0 * * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }

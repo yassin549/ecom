@@ -19,8 +19,7 @@
     "lighthouse": "lighthouse http://localhost:3000 --view --output html --output-path ./lighthouse-report.html",
     "bundle:analyze": "npx @next/bundle-analyzer",
     "deploy:preview": "vercel",
-    "deploy:prod": "vercel --prod",
-    "postbuild": "next-sitemap"
+    "deploy:prod": "vercel --prod"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
