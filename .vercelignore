@@ -1,0 +1,7 @@
+# Don't upload these to Vercel
+node_modules
+.next
+.env.local
+.env
+*.log
+.DS_Store
