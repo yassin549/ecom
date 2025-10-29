@@ -38,6 +38,7 @@
     "@tanstack/react-virtual": "^3.13.12",
     "@types/canvas-confetti": "^1.9.0",
     "@types/nprogress": "^0.2.3",
+    "@vercel/postgres": "^0.10.0",
     "apexcharts": "^5.3.5",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
