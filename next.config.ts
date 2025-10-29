@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  serverExternalPackages: ['@prisma/client', 'prisma'],
   images: {
     remotePatterns: [
       {
@@ -18,7 +19,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', '@tanstack/react-table'],
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   poweredByHeader: false,
   compress: true,
