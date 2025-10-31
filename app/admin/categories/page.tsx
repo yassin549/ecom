@@ -16,11 +16,19 @@ type Category = {
   updatedAt: Date
 }
 
+type CategoryFormData = {
+  id?: string
+  name: string
+  slug: string
+  description: string
+  image: string | null
+}
+
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFormData | null>(null)
 
   useEffect(() => {
     fetchCategories()
@@ -50,7 +58,13 @@ export default function AdminCategoriesPage() {
   }
 
   const handleEdit = (category: Category) => {
-    setSelectedCategory(category)
+    setSelectedCategory({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description || "",
+      image: category.image,
+    })
     setIsModalOpen(true)
   }
 
