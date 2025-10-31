@@ -14,26 +14,40 @@ import {
 import { Search, Plus, Edit, Trash2, ArrowUpDown } from "lucide-react"
 import { formatPrice } from "@/lib/currency"
 import toast from "react-hot-toast"
+import { ProductFormModal } from "@/components/admin/product-form-modal"
 
 type Product = {
   id: string
   name: string
+  description: string
   price: number
   stock: number
+  categoryId: string
   category: {
     id: string
     name: string
   }
+  image: string
+  images: string
   featured: boolean
+}
+
+type Category = {
+  id: string
+  name: string
 }
 
 export default function AdminProductsPage() {
   const [data, setData] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [globalFilter, setGlobalFilter] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   useEffect(() => {
     fetchProducts()
+    fetchCategories()
   }, [])
 
   const fetchProducts = async () => {
@@ -57,6 +71,52 @@ export default function AdminProductsPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const cats = await response.json()
+        setCategories(cats)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct({
+      ...product,
+      images: product.images ? JSON.parse(product.images) : [],
+    })
+    setIsModalOpen(true)
+  }
+
+  const handleDelete = async (productId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return
+
+    try {
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-role': 'admin',
+        },
+      })
+
+      if (!response.ok) throw new Error('Failed to delete')
+
+      toast.success('Produit supprimé')
+      fetchProducts()
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      toast.error('Erreur lors de la suppression')
+    }
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setSelectedProduct(null)
   }
 
   const columns = useMemo<ColumnDef<Product>[]>(
@@ -150,19 +210,23 @@ export default function AdminProductsPage() {
       {
         id: "actions",
         header: "Actions",
-        cell: () => (
+        cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={() => handleEdit(row.original)}
               className="p-2 hover:bg-indigo-50 text-indigo-600 rounded-lg transition-colors"
+              title="Modifier"
             >
               <Edit className="h-4 w-4" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={() => handleDelete(row.original.id)}
               className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
+              title="Supprimer"
             >
               <Trash2 className="h-4 w-4" />
             </motion.button>
@@ -204,10 +268,12 @@ export default function AdminProductsPage() {
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => setIsModalOpen(true)}
           className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors flex items-center gap-2"
         >
           <Plus className="h-5 w-5" />
-          Nouveau Produit
+          <span className="hidden sm:inline">Nouveau Produit</span>
+          <span className="sm:hidden">Nouveau</span>
         </motion.button>
       </div>
 
@@ -295,6 +361,18 @@ export default function AdminProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Product Form Modal */}
+      <ProductFormModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSuccess={() => {
+          fetchProducts()
+          handleModalClose()
+        }}
+        product={selectedProduct}
+        categories={categories}
+      />
     </div>
   )
 }

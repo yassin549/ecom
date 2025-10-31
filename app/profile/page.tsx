@@ -45,20 +45,22 @@ export default function ProfilePage() {
   const { data: ordersData, isLoading } = useQuery({
     queryKey: ["user-orders"],
     queryFn: async () => {
-      // Mock user orders
-      const orders: Order[] = Array.from({ length: 50 }, (_, i) => ({
-        id: `ORD-${String(i + 1).padStart(6, "0")}`,
-        date: new Date(Date.now() - i * 86400000 * 3).toISOString(),
-        status: ["delivered", "shipped", "processing"][i % 3],
-        total: Math.random() * 500 + 100,
-        items: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
-          id: `item-${i}-${j}`,
-          name: `Produit ${j + 1}`,
-          quantity: Math.floor(Math.random() * 2) + 1,
-          price: Math.random() * 200 + 50,
-        })),
-      }))
-      return orders
+      try {
+        const response = await fetch('/api/user/orders')
+        if (!response.ok) {
+          if (response.status === 401) {
+            // User not authenticated, return empty array
+            return []
+          }
+          throw new Error('Failed to fetch orders')
+        }
+        const orders = await response.json()
+        return orders as Order[]
+      } catch (error) {
+        console.error('Error fetching orders:', error)
+        toast.error('Erreur lors du chargement des commandes')
+        return []
+      }
     },
   })
 
