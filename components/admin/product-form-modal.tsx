@@ -398,32 +398,32 @@ export function ProductFormModal({
                       )}
                     </div>
                   </div>
-                </form>
 
-                {/* Footer */}
-                <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Enregistrement...
-                      </>
-                    ) : (
-                      <>{product?.id ? "Mettre à jour" : "Créer le produit"}</>
-                    )}
-                  </button>
-                </div>
+                  {/* Footer - Inside Form */}
+                  <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-end gap-3 -mx-6 -mb-6 mt-6">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Enregistrement...
+                        </>
+                      ) : (
+                        <>{product?.id ? "Mettre à jour" : "Créer le produit"}</>
+                      )}
+                    </button>
+                  </div>
+                </form>
               </motion.div>
             </div>
           </div>
