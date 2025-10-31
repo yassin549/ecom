@@ -2,6 +2,7 @@
 // Prefer pooled connections. If only a direct URL exists, convert to pooled at runtime.
 
 let cachedSql: any = null
+let connectPromise: Promise<void> | null = null
 
 function buildPooledConnectionString(): string | null {
 	const pooled = process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || null
@@ -26,6 +27,13 @@ export async function getSql() {
 		// If we have a (real or converted) pooled URL, instantiate a client against it
 		const { createClient } = await import('@vercel/postgres')
 		const client = createClient({ connectionString: pooledUrl })
+		if (!connectPromise) {
+			connectPromise = client.connect().catch((e: unknown) => {
+				connectPromise = null
+				throw e
+			})
+		}
+		await connectPromise
 		cachedSql = client.sql
 		return cachedSql
 	}
