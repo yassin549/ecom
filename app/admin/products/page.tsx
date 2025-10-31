@@ -87,8 +87,15 @@ export default function AdminProductsPage() {
 
   const handleEdit = (product: Product) => {
     setSelectedProduct({
-      ...product,
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      categoryId: product.categoryId,
+      image: product.image,
       images: product.images ? JSON.parse(product.images) : [],
+      featured: product.featured,
     })
     setIsModalOpen(true)
   }
