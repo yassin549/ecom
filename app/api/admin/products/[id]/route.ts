@@ -7,7 +7,7 @@ export const revalidate = 0
 // Update product (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const isAdmin = request.headers.get('x-user-role') === 'admin'
@@ -19,6 +19,7 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     const body = await request.json()
     const { name, description, price, stock, categoryId, image, images, featured } = body
 
@@ -38,7 +39,7 @@ export async function PUT(
 
     // Update product
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         slug,
@@ -68,7 +69,7 @@ export async function PUT(
 // Delete product (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const isAdmin = request.headers.get('x-user-role') === 'admin'
@@ -80,8 +81,9 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
