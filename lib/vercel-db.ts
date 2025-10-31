@@ -1,5 +1,12 @@
-import { createClient } from '@vercel/postgres'
+// Lazy accessors to avoid requiring database env vars at import/build time
+// Next/Turbopack can import modules during "collecting page data"; dynamic import defers env validation
 
-// Use a lazy client that relies on Vercel's pooled connection automatically.
-// This avoids validating/connecting at import time and works across regions.
-export const db = createClient()
+let _sql: any = null
+
+export async function getSql() {
+  if (!_sql) {
+    const { sql } = await import('@vercel/postgres')
+    _sql = sql
+  }
+  return _sql
+}

@@ -1,6 +1,6 @@
 import { HeroModern } from "@/components/home/hero-modern"
 import { FeaturedProducts } from "@/components/home/featured-products"
-import { db } from '@/lib/vercel-db'
+import { getSql } from '@/lib/vercel-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -23,7 +23,8 @@ type Product = {
 
 export default async function Home() {
   // Fetch featured products dynamically using Vercel Postgres
-  const { rows } = await db.sql`
+  const sql = await getSql()
+  const { rows } = await sql`
     SELECT p.id, p.name, p.slug, p.price, p.image, p.rating, 
            p."reviewCount", p.stock,
            json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
