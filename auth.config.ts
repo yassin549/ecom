@@ -19,13 +19,6 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id?: string
-    role?: string
-  }
-}
-
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -95,9 +88,9 @@ export default {
     },
     async session({ session, token }) {
       // Add user id and role to session for client-side access
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
+      if (session.user && token.sub) {
+        session.user.id = token.sub
+        session.user.role = (token.role as string) || 'user'
       }
       return session
     },
