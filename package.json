@@ -11,6 +11,7 @@
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "tsx scripts/reset-db.ts",
     "db:studio": "prisma studio",
     "analyze": "cross-env ANALYZE=true next build",
     "test:chrome": "start chrome http://localhost:3000",

@@ -2,10 +2,16 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Twitter, Instagram, Youtube, Mail, ChevronDown, Phone, MapPin } from "lucide-react"
 
 export function Footer() {
+  const pathname = usePathname()
+  // Do not render the public footer on admin pages
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)

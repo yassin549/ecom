@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-60 bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900">Admin</h1>
           <button
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         animate={{
           x: isSidebarOpen ? 0 : -280,
         }}
-        className="fixed top-0 left-0 z-30 h-full w-70 bg-white border-r border-gray-200 lg:translate-x-0"
+        className="fixed top-0 left-0 z-50 h-full w-70 bg-white border-r border-gray-200 lg:translate-x-0"
       >
         <div className="flex flex-col h-full">
           {/* Logo */}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Package, ShoppingCart, TrendingUp, Users, DollarSign } from "lucide-react"
 import { KPICard } from "@/components/admin/kpi-card"
@@ -27,33 +27,47 @@ export default function AdminDashboard() {
         ...(dateRange.end && { endDate: dateRange.end }),
       })
 
-      const response = await fetch(`/api/orders?${params}`)
+      const response = await fetch(`/api/orders?${params}` , {
+        headers: {
+          "x-user-role": "admin",
+        },
+      })
       return response.json()
     },
     refetchInterval: 30000, // Poll every 30 seconds
   })
 
-  // Generate mock revenue data
-  const revenueData = {
-    labels: [
-      "Jan",
-      "Fév",
-      "Mar",
-      "Avr",
-      "Mai",
-      "Juin",
-      "Juil",
-      "Août",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Déc",
-    ],
-    values: [
-      45000, 52000, 48000, 61000, 55000, 67000, 72000, 68000, 75000, 82000, 79000,
-      88000,
-    ],
-  }
+  // Fetch admin stats for revenue chart (last 12 months)
+  const { data: stats } = useQuery({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/stats`, {
+        headers: {
+          "x-user-role": "admin",
+        },
+        cache: "no-store",
+      })
+      return res.json()
+    },
+    refetchInterval: 60000,
+  })
+
+  const revenueData = useMemo(() => {
+    const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"]
+
+    if (!stats?.revenueByMonth || stats.revenueByMonth.length === 0) {
+      return { labels: months, values: new Array(12).fill(0) }
+    }
+
+    // revenueByMonth comes ordered DESC by month in the API; map to last 12 months ascending
+    const ordered = [...stats.revenueByMonth].reverse()
+    const labels = ordered.map((m: any) => {
+      const date = new Date(m.month as string)
+      return months[date.getMonth()]
+    })
+    const values = ordered.map((m: any) => Number(m.revenue) || 0)
+    return { labels, values }
+  }, [stats])
 
   const statusData = data?.stats
     ? {

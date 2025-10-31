@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ShoppingCart, User, Menu, X, Search } from "lucide-react"
 import { useCartStore } from "@/lib/store/cart-store"
@@ -11,6 +12,12 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const cartCount = useCartStore((state) => state.getTotalItems())
+  const pathname = usePathname()
+
+  // Hide public header on admin routes to prevent overlap with the admin UI
+  if (pathname?.startsWith("/admin")) {
+    return null
+  }
 
   const navigation = [
     { name: "Accueil", href: "/" },
@@ -20,7 +27,7 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-4 z-40 w-full px-4 sm:px-6 lg:px-8">
       <nav className="container mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-full shadow-xl" aria-label="Main navigation">
         <div className="flex h-16 items-center justify-between px-6">
           {/* Logo */}
