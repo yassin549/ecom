@@ -27,9 +27,9 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-4 z-40 w-full px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
       <nav className="container mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-full shadow-xl" aria-label="Main navigation">
-        <div className="flex h-16 items-center justify-between px-6">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <Link 
             href="/" 
@@ -62,15 +62,15 @@ export function Header() {
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+              className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 transition-colors"
               aria-label="Rechercher"
             >
-              <Search className="h-5 w-5 text-gray-700" />
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
             </motion.button>
 
             {/* Cart */}
@@ -78,10 +78,10 @@ export function Header() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+              className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 transition-colors"
               aria-label={`Panier avec ${cartCount} articles`}
             >
-              <ShoppingCart className="h-5 w-5 text-gray-700" />
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
               {cartCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -98,10 +98,10 @@ export function Header() {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-accent transition-colors"
+                className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-accent transition-colors"
                 aria-label="Profil utilisateur"
               >
-                <User className="h-5 w-5" />
+                <User className="h-4 w-4 sm:h-5 sm:w-5" />
               </motion.button>
             </Link>
 
@@ -110,11 +110,11 @@ export function Header() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-accent transition-colors"
+              className="md:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-accent transition-colors"
               aria-label="Basculer le menu"
               aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </motion.button>
           </div>
         </div>

@@ -181,3 +181,19 @@ model Session {
   @@index([token])
   @@index([expiresAt])
 }
+
+model Command {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  action      String   // Type of command: reorder, track, support, etc.
+  status      String   @default("pending") // pending, completed, cancelled
+  metadata    String   @default("{}") // JSON for additional data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}

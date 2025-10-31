@@ -4,6 +4,37 @@ import { prisma } from '@/lib/db/prisma'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+// Get all products (Admin only)
+export async function GET(request: NextRequest) {
+  try {
+    const isAdmin = request.headers.get('x-user-role') === 'admin'
+    
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 403 }
+      )
+    }
+
+    const products = await prisma.product.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return NextResponse.json(products)
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch products' },
+      { status: 500 }
+    )
+  }
+}
+
 // Create new product (Admin only)
 export async function POST(request: NextRequest) {
   try {

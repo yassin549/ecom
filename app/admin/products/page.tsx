@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { motion } from "framer-motion"
 import {
   useReactTable,
@@ -13,29 +13,51 @@ import {
 } from "@tanstack/react-table"
 import { Search, Plus, Edit, Trash2, ArrowUpDown } from "lucide-react"
 import { formatPrice } from "@/lib/currency"
+import toast from "react-hot-toast"
 
 type Product = {
   id: string
   name: string
   price: number
   stock: number
-  category: string
-  status: "active" | "draft"
+  category: {
+    id: string
+    name: string
+  }
+  featured: boolean
 }
 
-// Mock data
-const mockProducts: Product[] = Array.from({ length: 50 }, (_, i) => ({
-  id: `prod-${i + 1}`,
-  name: `Produit ${i + 1}`,
-  price: Math.random() * 1000 + 50,
-  stock: Math.floor(Math.random() * 100),
-  category: ["Électronique", "Mode", "Maison"][Math.floor(Math.random() * 3)],
-  status: Math.random() > 0.3 ? "active" : "draft",
-}))
-
 export default function AdminProductsPage() {
-  const [data, setData] = useState<Product[]>(mockProducts)
+  const [data, setData] = useState<Product[]>([])
   const [globalFilter, setGlobalFilter] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/admin/products', {
+        headers: {
+          'x-user-role': 'admin',
+        },
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products')
+      }
+      
+      const products = await response.json()
+      setData(products)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      toast.error('Erreur lors du chargement des produits')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const columns = useMemo<ColumnDef<Product>[]>(
     () => [
@@ -57,11 +79,14 @@ export default function AdminProductsPage() {
       {
         accessorKey: "category",
         header: "Catégorie",
-        cell: (info) => (
-          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm">
-            {info.getValue() as string}
-          </span>
-        ),
+        cell: (info) => {
+          const category = info.getValue() as { name: string }
+          return (
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm">
+              {category.name}
+            </span>
+          )
+        },
       },
       {
         accessorKey: "price",
@@ -105,19 +130,19 @@ export default function AdminProductsPage() {
         },
       },
       {
-        accessorKey: "status",
+        accessorKey: "featured",
         header: "Statut",
         cell: (info) => {
-          const status = info.getValue() as string
+          const featured = info.getValue() as boolean
           return (
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
-                status === "active"
+                featured
                   ? "bg-green-100 text-green-700"
                   : "bg-gray-100 text-gray-700"
               }`}
             >
-              {status === "active" ? "Actif" : "Brouillon"}
+              {featured ? "En vedette" : "Standard"}
             </span>
           )
         },
@@ -172,7 +197,9 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Produits</h1>
-          <p className="text-gray-600 mt-1">{data.length} produits au total</p>
+          <p className="text-gray-600 mt-1">
+            {isLoading ? 'Chargement...' : `${data.length} produits au total`}
+          </p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
@@ -198,6 +225,11 @@ export default function AdminProductsPage() {
 
       {/* Table */}
       <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -237,6 +269,7 @@ export default function AdminProductsPage() {
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">

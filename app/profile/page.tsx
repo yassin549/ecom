@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useState, useRef } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useRef } from "react"
-import { Package, ShoppingBag, User, MapPin, Calendar } from "lucide-react"
+import { Package, ShoppingBag, User, MapPin, Calendar, Terminal, CheckCircle, XCircle, Clock } from "lucide-react"
 import { formatPrice } from "@/lib/currency"
 import { useCartStore } from "@/lib/store/cart-store"
+import toast from "react-hot-toast"
 
 type Order = {
   id: string
@@ -23,11 +23,23 @@ type Order = {
   }>
 }
 
+type Command = {
+  id: string
+  name: string
+  description?: string
+  action: string
+  status: string
+  metadata: string
+  createdAt: string
+  updatedAt: string
+}
+
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"orders" | "info">("orders")
+  const [activeTab, setActiveTab] = useState<"orders" | "info" | "commands">("orders")
   const addItem = useCartStore((state) => state.addItem)
   const updateQuantity = useCartStore((state) => state.updateQuantity)
   const parentRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
 
   // Fetch user orders
   const { data: ordersData, isLoading } = useQuery({
@@ -50,7 +62,38 @@ export default function ProfilePage() {
     },
   })
 
+  // Fetch user commands
+  const { data: commandsData, isLoading: commandsLoading } = useQuery({
+    queryKey: ["user-commands"],
+    queryFn: async () => {
+      const response = await fetch('/api/commands')
+      if (!response.ok) throw new Error('Failed to fetch commands')
+      return response.json() as Promise<Command[]>
+    },
+  })
+
+  // Update command status mutation
+  const updateCommandMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await fetch('/api/commands', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+      if (!response.ok) throw new Error('Failed to update command')
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-commands'] })
+      toast.success('Commande mise à jour')
+    },
+    onError: () => {
+      toast.error('Erreur lors de la mise à jour')
+    },
+  })
+
   const orders = ordersData || []
+  const commands = commandsData || []
 
   // Virtualization for long order lists
   const rowVirtualizer = useVirtualizer({
@@ -114,10 +157,10 @@ export default function ProfilePage() {
 
         {/* Tabs */}
         <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg overflow-hidden">
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-gray-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab("orders")}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
                 activeTab === "orders"
                   ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
                   : "text-gray-600 hover:bg-gray-50"
@@ -125,12 +168,27 @@ export default function ProfilePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <Package className="h-5 w-5" />
-                Mes Commandes
+                <span className="hidden sm:inline">Mes Commandes</span>
+                <span className="sm:hidden">Commandes</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab("commands")}
+              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
+                activeTab === "commands"
+                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Terminal className="h-5 w-5" />
+                <span className="hidden sm:inline">Actions</span>
+                <span className="sm:hidden">Actions</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab("info")}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
                 activeTab === "info"
                   ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
                   : "text-gray-600 hover:bg-gray-50"
@@ -138,7 +196,8 @@ export default function ProfilePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <User className="h-5 w-5" />
-                Informations
+                <span className="hidden sm:inline">Informations</span>
+                <span className="sm:hidden">Info</span>
               </div>
             </button>
           </div>
@@ -249,6 +308,94 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
+            ) : activeTab === "commands" ? (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Mes Actions
+                </h2>
+
+                {commandsLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p className="text-gray-600">Chargement...</p>
+                  </div>
+                ) : commands.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Terminal className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">Aucune action pour le moment</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {commands.map((command) => {
+                      const statusIcon = {
+                        pending: <Clock className="h-5 w-5 text-yellow-600" />,
+                        completed: <CheckCircle className="h-5 w-5 text-green-600" />,
+                        cancelled: <XCircle className="h-5 w-5 text-red-600" />,
+                      }[command.status]
+
+                      const statusColor = {
+                        pending: "bg-yellow-100 text-yellow-700",
+                        completed: "bg-green-100 text-green-700",
+                        cancelled: "bg-red-100 text-red-700",
+                      }[command.status]
+
+                      const statusLabel = {
+                        pending: "En attente",
+                        completed: "Terminé",
+                        cancelled: "Annulé",
+                      }[command.status]
+
+                      return (
+                        <motion.div
+                          key={command.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-4 bg-gray-50 rounded-xl border border-gray-200"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-gray-900 mb-1">{command.name}</h3>
+                              {command.description && (
+                                <p className="text-sm text-gray-600">{command.description}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(command.createdAt).toLocaleDateString("fr-FR")}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {statusIcon}
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor}`}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                          </div>
+                          {command.status === "pending" && (
+                            <div className="flex gap-2">
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => updateCommandMutation.mutate({ id: command.id, status: "completed" })}
+                                className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+                              >
+                                Marquer comme terminé
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => updateCommandMutation.mutate({ id: command.id, status: "cancelled" })}
+                                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+                              >
+                                Annuler
+                              </motion.button>
+                            </div>
+                          )}
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-gray-900">
@@ -305,13 +452,24 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
-                >
-                  Enregistrer les modifications
-                </motion.button>
+                <div className="flex gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => toast.success('Modifications enregistrées!')}
+                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
+                  >
+                    Enregistrer les modifications
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => toast.info('Fonctionnalité à venir')}
+                    className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
+                  >
+                    Annuler
+                  </motion.button>
+                </div>
               </div>
             )}
           </div>
