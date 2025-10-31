@@ -82,10 +82,7 @@
   "functions": {
     "app/**": {
       "maxDuration": 10,
-      "includeFiles": [
-        "node_modules/.prisma/client/**",
-        "node_modules/@prisma/client/**"
-      ]
+      "includeFiles": "node_modules/.prisma/client/**"
     }
   },
   "crons": [
