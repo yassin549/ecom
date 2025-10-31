@@ -464,7 +464,7 @@ export default function ProfilePage() {
                   <motion.button
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => toast.info('Fonctionnalité à venir')}
+                    onClick={() => toast('Fonctionnalité à venir', { icon: 'ℹ️' })}
                     className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
                   >
                     Annuler
