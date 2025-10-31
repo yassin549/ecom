@@ -37,13 +37,25 @@ type Category = {
   name: string
 }
 
+type ProductFormData = {
+  id?: string
+  name: string
+  description: string
+  price: number
+  stock: number
+  categoryId: string
+  image: string
+  images: string[]
+  featured: boolean
+}
+
 export default function AdminProductsPage() {
   const [data, setData] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [globalFilter, setGlobalFilter] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<ProductFormData | null>(null)
 
   useEffect(() => {
     fetchProducts()
