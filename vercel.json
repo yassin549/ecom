@@ -80,8 +80,12 @@
     }
   },
   "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 10
+    "app/**": {
+      "maxDuration": 10,
+      "includeFiles": [
+        "node_modules/.prisma/client/**",
+        "node_modules/@prisma/client/**"
+      ]
     }
   },
   "crons": [

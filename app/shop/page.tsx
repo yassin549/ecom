@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
+import { getSql } from "@/lib/vercel-db"
 import { ProductGrid } from "@/components/products/product-grid"
 import { CategoriesSidebar } from "@/components/categories/categories-sidebar"
 
@@ -17,23 +18,43 @@ export default async function ShopPage({
 }) {
   // Await searchParams in Next.js 16
   const params = await searchParams
+  const isVercel = process.env.VERCEL === '1'
+
   // Fetch categories with product counts
-  const categories = await prisma.category.findMany({
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      image: true,
-      _count: {
-        select: {
-          products: true,
-        },
+  let categories: Array<{ id: string; name: string; slug: string; image: string | null; _count: { products: number } }> = []
+  if (isVercel) {
+    try {
+      const sql = await getSql()
+      const { rows } = await sql`
+        SELECT c.id, c.name, c.slug, c.image,
+               COUNT(p.id)::int AS products
+        FROM "Category" c
+        LEFT JOIN "Product" p ON p."categoryId" = c.id
+        GROUP BY c.id
+        ORDER BY c.name ASC
+      `
+      categories = rows.map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        slug: r.slug,
+        image: r.image,
+        _count: { products: r.products },
+      }))
+    } catch {
+      categories = []
+    }
+  } else {
+    categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        image: true,
+        _count: { select: { products: true } },
       },
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  })
+      orderBy: { name: 'asc' },
+    })
+  }
 
   const categoriesWithCount = categories.map((cat) => ({
     ...cat,
@@ -43,11 +64,21 @@ export default async function ShopPage({
   // Get current category if specified
   let currentCategoryId: string | undefined
   if (params.category) {
-    const category = await prisma.category.findUnique({
-      where: { slug: params.category },
-      select: { id: true },
-    })
-    currentCategoryId = category?.id
+    if (isVercel) {
+      try {
+        const sql = await getSql()
+        const { rows } = await sql`SELECT id FROM "Category" WHERE slug = ${params.category}`
+        currentCategoryId = rows[0]?.id
+      } catch {
+        currentCategoryId = undefined
+      }
+    } else {
+      const category = await prisma.category.findUnique({
+        where: { slug: params.category },
+        select: { id: true },
+      })
+      currentCategoryId = category?.id
+    }
   }
 
   // Fetch initial products
@@ -62,23 +93,47 @@ export default async function ShopPage({
     ]
   }
 
-  const initialProducts = await prisma.product.findMany({
-    where,
-    take: 12,
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      image: true,
-      rating: true,
-      reviewCount: true,
-      stock: true,
-    },
-  })
+  let initialProducts: Array<{ id: string; name: string; slug: string; price: number; image: string; rating: number; reviewCount: number; stock: number }> = []
+  if (isVercel) {
+    try {
+      const sql = await getSql()
+      const clauses: any[] = []
+      if (currentCategoryId) {
+        clauses.push(sql`p."categoryId" = ${currentCategoryId}`)
+      }
+      if (params.search) {
+        const q = `%${params.search}%`
+        clauses.push(sql`(p.name ILIKE ${q} OR p.description ILIKE ${q})`)
+      }
+      const whereSql = clauses.length ? sql`WHERE ${sql.join(clauses, sql` AND `)}` : sql``
+      const { rows } = await sql`
+        SELECT p.id, p.name, p.slug, p.price, p.image, p.rating, p."reviewCount", p.stock
+        FROM "Product" p
+        ${whereSql}
+        ORDER BY p."createdAt" DESC
+        LIMIT 12
+      `
+      initialProducts = rows
+    } catch {
+      initialProducts = []
+    }
+  } else {
+    initialProducts = await prisma.product.findMany({
+      where,
+      take: 12,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        image: true,
+        rating: true,
+        reviewCount: true,
+        stock: true,
+      },
+    })
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
