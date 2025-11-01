@@ -24,11 +24,18 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(categories || [])
   } catch (error: any) {
-    console.error('Error fetching categories:', error)
+    console.error('[CATEGORIES GET] Error:', {
+      message: error?.message,
+      code: error?.code,
+      name: error?.name,
+      stack: error?.stack?.substring(0, 500)
+    })
     return NextResponse.json(
       { 
         error: 'Failed to fetch categories',
-        details: error?.message || 'Unknown error'
+        details: error?.message || 'Unknown error',
+        code: error?.code,
+        name: error?.name
       },
       { status: 500 }
     )
@@ -133,18 +140,21 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(category, { status: 201 })
   } catch (error: any) {
-    console.error('POST /api/admin/categories - ERROR:', {
+    console.error('[CATEGORIES POST] Full error:', {
       message: error?.message,
       code: error?.code,
-      stack: error?.stack,
-      name: error?.name
+      stack: error?.stack?.substring(0, 1000),
+      name: error?.name,
+      cause: error?.cause
     })
     
     return NextResponse.json(
       { 
         error: 'Failed to create category',
         details: error?.message || 'Unknown error',
-        code: error?.code
+        code: error?.code,
+        name: error?.name,
+        hint: 'Check server logs for full error details'
       },
       { status: 500 }
     )
