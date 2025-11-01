@@ -1,5 +1,8 @@
 import { neon } from '@neondatabase/serverless'
 
+// Lazy initialization to avoid issues at module load time
+let sqlClient: ReturnType<typeof neon> | null = null
+
 // Get connection string from environment
 const getConnectionString = (): string => {
   const connectionString = 
@@ -19,7 +22,17 @@ const getConnectionString = (): string => {
   return connectionString
 }
 
-// Create neon client - works perfectly with Supabase
-// Using the same pattern as lib/db/neon.ts which works
-export const sql = neon(getConnectionString())
+// Create neon client lazily - only when first used
+function getSqlClient() {
+  if (!sqlClient) {
+    const connectionString = getConnectionString()
+    sqlClient = neon(connectionString)
+  }
+  return sqlClient
+}
+
+// Export sql function that initializes client on first use
+export const sql: ReturnType<typeof neon> = ((strings: TemplateStringsArray, ...values: any[]) => {
+  return getSqlClient()(strings, ...values)
+}) as ReturnType<typeof neon>
 
