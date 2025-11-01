@@ -206,10 +206,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete products using SQL
-    await sql`
-      DELETE FROM "Product" 
-      WHERE id = ANY(${ids})
-    `
+    // Delete products one by one for compatibility across different PostgreSQL clients
+    for (const id of ids) {
+      await sql`DELETE FROM "Product" WHERE id = ${id}`
+    }
 
     return NextResponse.json({ 
       success: true, 

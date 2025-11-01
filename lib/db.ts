@@ -13,6 +13,22 @@ const getSql = async () => {
   return _sql
 }
 
+// Export sql function that works as a tagged template
+// This allows admin routes to use sql directly
+// Note: sql is a synchronous function that returns a Promise
+// Vercel Postgres returns { rows }, so we extract rows to match Neon's behavior
+export const sql = (strings: TemplateStringsArray, ...values: any[]) => {
+  return getSql().then(async (sqlFn) => {
+    const result = await sqlFn(strings, ...values)
+    // Vercel Postgres returns { rows }, Neon returns array directly
+    // Extract rows if it's a Vercel Postgres response
+    if (result && typeof result === 'object' && 'rows' in result) {
+      return result.rows
+    }
+    return result
+  })
+}
+
 export const db = {
   // Products
   async getProducts(limit?: number) {
