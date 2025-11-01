@@ -61,58 +61,139 @@ export function HeroModern() {
 
           {/* Search Bar */}
           <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.2,
+              type: "spring",
+              stiffness: 100
+            }}
             onSubmit={handleSearch}
             className="max-w-3xl mx-auto mb-8 sm:mb-10"
           >
             <motion.div 
               className="relative group"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ scale: 1.03, y: -4 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
             >
-              {/* Glow effect on hover */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-300" />
+              {/* Animated Glow effect */}
+              <motion.div 
+                className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-30 blur-lg"
+                animate={{
+                  opacity: [0, 0.3, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              />
               
-              <div className="relative flex items-center bg-white/95 backdrop-blur-md border-2 border-gray-200 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group-hover:border-indigo-400 focus-within:border-indigo-500 focus-within:shadow-2xl">
-                <motion.div 
-                  className="pl-3 sm:pl-6 pr-2 sm:pr-4"
-                  animate={{ 
-                    rotate: searchQuery ? [0, -10, 10, -10, 0] : 0 
+              <motion.div 
+                className="relative flex items-center bg-white/95 backdrop-blur-md border-2 border-gray-200 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
+                animate={{
+                  borderColor: ["#e5e7eb", "#a5b4fc", "#e5e7eb"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              >
+                {/* Animated background shimmer */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-100/20 to-transparent"
+                  animate={{
+                    x: ["-100%", "100%"],
                   }}
-                  transition={{ duration: 0.5 }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+                
+                <motion.div 
+                  className="relative pl-3 sm:pl-6 pr-2 sm:pr-4 z-10"
+                  animate={{ 
+                    scale: searchQuery ? [1, 1.2, 1] : 1,
+                    rotate: searchQuery ? [0, -15, 15, -15, 0] : 0 
+                  }}
+                  transition={{ duration: 0.6 }}
                 >
-                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 group-hover:text-indigo-600 group-focus-within:text-indigo-600 transition-colors duration-300" />
+                  <motion.div
+                    animate={{
+                      rotate: [0, 360],
+                    }}
+                    transition={{
+                      duration: 20,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  >
+                    <Search className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 drop-shadow-lg" />
+                  </motion.div>
                 </motion.div>
+                
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher des produits..."
-                  className="flex-1 py-3 sm:py-5 text-sm sm:text-lg bg-transparent focus:outline-none text-gray-900 placeholder:text-gray-400"
+                  className="relative flex-1 py-3 sm:py-5 text-sm sm:text-lg bg-transparent focus:outline-none text-gray-900 placeholder:text-gray-400 z-10"
                   aria-label="Rechercher des produits"
                 />
+                
                 <motion.button
-                  whileHover={{ scale: 1.05, x: 2 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                  whileTap={{ scale: 0.9 }}
                   type="submit"
-                  className="m-1.5 sm:m-2 px-4 sm:px-8 py-2.5 sm:py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-1 sm:gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base group/btn"
+                  className="relative m-1.5 sm:m-2 px-4 sm:px-8 py-2.5 sm:py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white rounded-lg sm:rounded-xl font-semibold flex items-center gap-1 sm:gap-2 shadow-2xl text-sm sm:text-base overflow-hidden z-10"
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  style={{
+                    backgroundSize: "200% 200%"
+                  }}
                 >
-                  <span className="hidden sm:inline">Rechercher</span>
-                  <span className="sm:hidden">OK</span>
+                  {/* Button shimmer effect */}
                   <motion.div
-                    animate={{ x: [0, 3, 0] }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{
+                      x: ["-100%", "100%"],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                  
+                  <span className="relative hidden sm:inline">Rechercher</span>
+                  <span className="relative sm:hidden">OK</span>
+                  
+                  <motion.div
+                    className="relative"
+                    animate={{ 
+                      x: [0, 5, 0],
+                      scale: [1, 1.2, 1]
+                    }}
                     transition={{ 
                       repeat: Infinity, 
-                      duration: 1.5,
+                      duration: 1,
                       ease: "easeInOut"
                     }}
                   >
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 drop-shadow-lg" />
                   </motion.div>
                 </motion.button>
-              </div>
+              </motion.div>
             </motion.div>
           </motion.form>
 

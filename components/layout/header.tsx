@@ -64,16 +64,6 @@ export function Header() {
 
             {/* Right Section */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Search */}
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 transition-colors"
-                aria-label="Rechercher"
-              >
-                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
-              </motion.button>
-
               {/* Cart */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
