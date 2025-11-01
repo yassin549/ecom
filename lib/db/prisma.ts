@@ -1,20 +1,14 @@
 import { PrismaClient } from '@prisma/client'
-import { withAccelerate } from '@prisma/extension-accelerate'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
-const globalForPrisma = global as unknown as { prisma: ReturnType<typeof createPrismaClient> }
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-function createPrismaClient() {
-  const client = new PrismaClient({
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
-  
-  // Use Accelerate extension for better performance and to avoid binary issues on Vercel
-  return client.$extends(withAccelerate())
-}
-
-export const prisma = globalForPrisma.prisma || createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
