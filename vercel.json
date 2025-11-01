@@ -80,7 +80,11 @@
     }
   },
   "functions": {
-    "app/**": {
+    "app/api/**/*.ts": {
+      "maxDuration": 10,
+      "includeFiles": "node_modules/.prisma/client/**"
+    },
+    "app/**/*.tsx": {
       "maxDuration": 10,
       "includeFiles": "node_modules/.prisma/client/**"
     }
