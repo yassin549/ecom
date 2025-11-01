@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSql } from '@/lib/vercel-db'
+import { sql } from '@/lib/db/supabase'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -16,16 +16,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const sql = await getSql()
     const categories = await sql`
       SELECT * FROM "Category" 
       ORDER BY name ASC
     `
-    return NextResponse.json(categories)
-  } catch (error) {
+    
+    return NextResponse.json(categories || [])
+  } catch (error: any) {
     console.error('Error fetching categories:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch categories' },
+      { 
+        error: 'Failed to fetch categories',
+        details: error?.message || 'Unknown error'
+      },
       { status: 500 }
     )
   }
@@ -49,16 +52,23 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!name || !slug) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: name and slug are required' },
         { status: 400 }
       )
     }
 
-    const sql = await getSql()
+    // Validate slug format
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+    if (!slugRegex.test(slug)) {
+      return NextResponse.json(
+        { error: 'Invalid slug format. Use lowercase letters, numbers, and hyphens only.' },
+        { status: 400 }
+      )
+    }
     
     // Check if slug already exists
     const existing = await sql`
-      SELECT * FROM "Category" WHERE slug = ${slug}
+      SELECT id FROM "Category" WHERE slug = ${slug} LIMIT 1
     `
 
     if (existing && existing.length > 0) {
@@ -68,8 +78,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate a unique ID (similar to CUID format)
-    const id = `clx${Date.now().toString(36)}${Math.random().toString(36).substring(2)}`
+    // Generate a unique ID (CUID-like format)
+    const timestamp = Date.now().toString(36)
+    const random = Math.random().toString(36).substring(2, 15)
+    const id = `clx${timestamp}${random}`
 
     // Create category
     const categoryResult = await sql`
@@ -86,12 +98,27 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `
 
-    const category = categoryResult[0]
+    // Handle result (neon returns array)
+    const category = Array.isArray(categoryResult) ? categoryResult[0] : categoryResult
+    
+    if (!category) {
+      throw new Error('Failed to create category: no data returned')
+    }
+
     return NextResponse.json(category, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating category:', error)
+    
+    // Provide more detailed error information
+    const errorMessage = error?.message || 'Unknown error'
+    const errorCode = error?.code
+    
     return NextResponse.json(
-      { error: 'Failed to create category' },
+      { 
+        error: 'Failed to create category',
+        details: errorMessage,
+        code: errorCode
+      },
       { status: 500 }
     )
   }
