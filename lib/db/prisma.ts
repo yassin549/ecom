@@ -1,6 +1,12 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaNeon } from '@prisma/adapter-neon'
-import { Pool } from '@neondatabase/serverless'
+import { Pool, neonConfig } from '@neondatabase/serverless'
+
+// Configure WebSocket for local development
+if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
+  const ws = require('ws')
+  neonConfig.webSocketConstructor = ws
+}
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
@@ -18,6 +24,7 @@ function createPrismaClient() {
   const adapter = new PrismaNeon(pool)
   
   return new PrismaClient({
+    // @ts-ignore - Type mismatch between Prisma and Neon adapter
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
