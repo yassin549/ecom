@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   LogOut,
+  FolderOpen,
 } from "lucide-react"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -54,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navigation = [
     { name: "Tableau de Bord", href: "/admin", icon: LayoutDashboard },
     { name: "Produits", href: "/admin/products", icon: Package },
+    { name: "Catégories", href: "/admin/categories", icon: FolderOpen },
     { name: "Commandes", href: "/admin/orders", icon: ShoppingCart },
     { name: "Clients", href: "/admin/customers", icon: Users },
     { name: "Paramètres", href: "/admin/settings", icon: Settings },

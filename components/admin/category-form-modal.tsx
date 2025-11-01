@@ -97,7 +97,8 @@ export function CategoryFormModal({
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save category")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Failed to save category")
       }
 
       toast.success(
@@ -105,9 +106,9 @@ export function CategoryFormModal({
       )
       onSuccess()
       onClose()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving category:", error)
-      toast.error("Erreur lors de l'enregistrement")
+      toast.error(error.message || "Erreur lors de l'enregistrement")
     } finally {
       setIsSubmitting(false)
     }

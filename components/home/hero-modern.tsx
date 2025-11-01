@@ -13,7 +13,10 @@ export function HeroModern() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(searchQuery)}`)
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+    } else {
+      // If empty, just go to shop page
+      router.push('/shop')
     }
   }
 
@@ -64,11 +67,24 @@ export function HeroModern() {
             onSubmit={handleSearch}
             className="max-w-3xl mx-auto mb-8 sm:mb-10"
           >
-            <div className="relative group">
-              <div className="flex items-center bg-white/90 backdrop-blur-sm border-2 border-gray-200 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all overflow-hidden group-hover:border-indigo-300">
-                <div className="pl-3 sm:pl-6 pr-2 sm:pr-4">
-                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                </div>
+            <motion.div 
+              className="relative group"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Glow effect on hover */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-300" />
+              
+              <div className="relative flex items-center bg-white/95 backdrop-blur-md border-2 border-gray-200 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group-hover:border-indigo-400 focus-within:border-indigo-500 focus-within:shadow-2xl">
+                <motion.div 
+                  className="pl-3 sm:pl-6 pr-2 sm:pr-4"
+                  animate={{ 
+                    rotate: searchQuery ? [0, -10, 10, -10, 0] : 0 
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 group-hover:text-indigo-600 group-focus-within:text-indigo-600 transition-colors duration-300" />
+                </motion.div>
                 <input
                   type="text"
                   value={searchQuery}
@@ -78,17 +94,26 @@ export function HeroModern() {
                   aria-label="Rechercher des produits"
                 />
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.05, x: 2 }}
+                  whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="m-1.5 sm:m-2 px-4 sm:px-8 py-2.5 sm:py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg sm:rounded-xl font-semibold transition-colors flex items-center gap-1 sm:gap-2 shadow-lg text-sm sm:text-base"
+                  className="m-1.5 sm:m-2 px-4 sm:px-8 py-2.5 sm:py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center gap-1 sm:gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base group/btn"
                 >
                   <span className="hidden sm:inline">Rechercher</span>
                   <span className="sm:hidden">OK</span>
-                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <motion.div
+                    animate={{ x: [0, 3, 0] }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 1.5,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
+                  </motion.div>
                 </motion.button>
               </div>
-            </div>
+            </motion.div>
           </motion.form>
 
           {/* CTA Buttons */}
