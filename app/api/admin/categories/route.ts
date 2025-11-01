@@ -37,9 +37,12 @@ export async function GET(request: NextRequest) {
 // Create new category (Admin only)
 export async function POST(request: NextRequest) {
   try {
+    console.log('POST /api/admin/categories - Starting request')
+    
     const isAdmin = request.headers.get('x-user-role') === 'admin'
     
     if (!isAdmin) {
+      console.log('POST /api/admin/categories - Unauthorized')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -47,10 +50,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
+    console.log('POST /api/admin/categories - Body received:', { 
+      name: body.name, 
+      slug: body.slug,
+      hasDescription: !!body.description,
+      hasImage: !!body.image
+    })
+
     const { name, slug, description, image } = body
 
     // Validate required fields
     if (!name || !slug) {
+      console.log('POST /api/admin/categories - Missing required fields')
       return NextResponse.json(
         { error: 'Missing required fields: name and slug are required' },
         { status: 400 }
@@ -60,21 +71,25 @@ export async function POST(request: NextRequest) {
     // Validate slug format
     const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
     if (!slugRegex.test(slug)) {
+      console.log('POST /api/admin/categories - Invalid slug format')
       return NextResponse.json(
         { error: 'Invalid slug format. Use lowercase letters, numbers, and hyphens only.' },
         { status: 400 }
       )
     }
     
+    console.log('POST /api/admin/categories - Checking for existing slug:', slug)
+    
     // Check if slug already exists
     const existingResult = await sql`
       SELECT id FROM "Category" WHERE slug = ${slug} LIMIT 1
     `
     
-    // neon returns an array directly
-    const existing = Array.isArray(existingResult) ? existingResult : [existingResult]
-
-    if (existing && existing.length > 0) {
+    console.log('POST /api/admin/categories - Existing check result:', existingResult)
+    
+    // neon always returns an array
+    if (Array.isArray(existingResult) && existingResult.length > 0) {
+      console.log('POST /api/admin/categories - Slug already exists')
       return NextResponse.json(
         { error: 'A category with this slug already exists' },
         { status: 400 }
@@ -85,6 +100,8 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now().toString(36)
     const random = Math.random().toString(36).substring(2, 15)
     const id = `clx${timestamp}${random}`
+
+    console.log('POST /api/admin/categories - Creating category with id:', id)
 
     // Create category
     const categoryResult = await sql`
@@ -101,28 +118,32 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `
 
-    // neon returns an array directly - get first element
-    const category = Array.isArray(categoryResult) 
-      ? (categoryResult.length > 0 ? categoryResult[0] : null)
-      : categoryResult
-    
-    if (!category) {
+    console.log('POST /api/admin/categories - Insert result:', categoryResult)
+
+    // neon always returns an array - get first element
+    if (!Array.isArray(categoryResult) || categoryResult.length === 0) {
+      console.error('POST /api/admin/categories - No data returned from insert')
       throw new Error('Failed to create category: no data returned from database')
     }
 
+    const category = categoryResult[0]
+    
+    console.log('POST /api/admin/categories - Success! Category created:', category.id)
+
     return NextResponse.json(category, { status: 201 })
   } catch (error: any) {
-    console.error('Error creating category:', error)
-    
-    // Provide more detailed error information
-    const errorMessage = error?.message || 'Unknown error'
-    const errorCode = error?.code
+    console.error('POST /api/admin/categories - ERROR:', {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+      name: error?.name
+    })
     
     return NextResponse.json(
       { 
         error: 'Failed to create category',
-        details: errorMessage,
-        code: errorCode
+        details: error?.message || 'Unknown error',
+        code: error?.code
       },
       { status: 500 }
     )
