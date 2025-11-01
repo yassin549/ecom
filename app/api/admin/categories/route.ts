@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-// Import SQL-only client - completely independent of Prisma
-import { sql } from '@/lib/db/sql-only'
+// Simple database layer - NO PRISMA
+import { categories } from '@/lib/db/simple-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -17,12 +17,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const categories = await sql`
-      SELECT * FROM "Category" 
-      ORDER BY name ASC
-    `
-    
-    return NextResponse.json(categories || [])
+    const allCategories = await categories.getAll()
+    return NextResponse.json(allCategories)
   } catch (error: any) {
     console.error('[CATEGORIES GET] Error:', {
       message: error?.message,
@@ -89,14 +85,9 @@ export async function POST(request: NextRequest) {
     console.log('POST /api/admin/categories - Checking for existing slug:', slug)
     
     // Check if slug already exists
-    const existingResult = await sql`
-      SELECT id FROM "Category" WHERE slug = ${slug} LIMIT 1
-    `
+    const existing = await categories.getBySlug(slug)
     
-    console.log('POST /api/admin/categories - Existing check result:', existingResult)
-    
-    // neon always returns an array
-    if (Array.isArray(existingResult) && existingResult.length > 0) {
+    if (existing) {
       console.log('POST /api/admin/categories - Slug already exists')
       return NextResponse.json(
         { error: 'A category with this slug already exists' },
@@ -104,37 +95,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate a unique ID (CUID-like format)
-    const timestamp = Date.now().toString(36)
-    const random = Math.random().toString(36).substring(2, 15)
-    const id = `clx${timestamp}${random}`
+    // Generate a unique ID
+    const id = `cat_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
 
     console.log('POST /api/admin/categories - Creating category with id:', id)
 
-    // Create category
-    const categoryResult = await sql`
-      INSERT INTO "Category" (id, name, slug, description, image, "createdAt", "updatedAt")
-      VALUES (
-        ${id},
-        ${name},
-        ${slug},
-        ${description || null},
-        ${image || null},
-        NOW(),
-        NOW()
-      )
-      RETURNING *
-    `
+    // Create category using simple DB helper
+    const category = await categories.create({
+      id,
+      name,
+      slug,
+      description: description || null,
+      image: image || null
+    })
 
-    console.log('POST /api/admin/categories - Insert result:', categoryResult)
-
-    // neon always returns an array - get first element
-    if (!Array.isArray(categoryResult) || categoryResult.length === 0) {
-      console.error('POST /api/admin/categories - No data returned from insert')
+    if (!category) {
       throw new Error('Failed to create category: no data returned from database')
     }
-
-    const category = categoryResult[0]
     
     console.log('POST /api/admin/categories - Success! Category created:', category.id)
 

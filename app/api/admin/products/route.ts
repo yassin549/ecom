@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-// Import SQL-only client - completely independent of Prisma
-import { sql } from '@/lib/db/sql-only'
+// Simple database layer - NO PRISMA
+import { products, categories } from '@/lib/db/simple-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -17,26 +17,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const products = await sql`
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', c.id,
-          'name', c.name,
-          'slug', c.slug,
-          'description', c.description,
-          'image', c.image
-        ) as category
-      FROM "Product" p
-      LEFT JOIN "Category" c ON p."categoryId" = c.id
-      ORDER BY p."createdAt" DESC
-    `
+    const allProducts = await products.getWithCategory()
 
     // Parse images JSON and transform category
-    const formattedProducts = products.map((product: any) => ({
+    const formattedProducts = allProducts.map((product: any) => ({
       ...product,
-      images: product.images ? JSON.parse(product.images) : [],
-      category: product.category || null,
+      images: product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [],
+      category: product.category ? (typeof product.category === 'string' ? JSON.parse(product.category) : product.category) : null,
     }))
 
     return NextResponse.json(formattedProducts)
@@ -93,67 +80,45 @@ export async function POST(request: NextRequest) {
       .replace(/(^-|-$)/g, '')
 
     // Check if slug already exists
-    const existingSlug = await sql`
-      SELECT id FROM "Product" WHERE slug = ${slug} LIMIT 1
-    `
+    const existingProduct = await products.getBySlug(slug)
     
-    if (Array.isArray(existingSlug) && existingSlug.length > 0) {
+    if (existingProduct) {
       // Append random string if slug exists
       const randomSuffix = Math.random().toString(36).substring(2, 8)
       slug = `${slug}-${randomSuffix}`
     }
 
     // Generate unique ID
-    const timestamp = Date.now().toString(36)
-    const random = Math.random().toString(36).substring(2, 15)
-    const id = `clx${timestamp}${random}`
+    const id = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
 
     console.log('POST /api/admin/products - Creating product with id:', id)
 
-    // Create product
-    const productResult = await sql`
-      INSERT INTO "Product" (
-        id, name, slug, description, price, stock, "categoryId", 
-        image, images, featured, "createdAt", "updatedAt"
-      )
-      VALUES (
-        ${id},
-        ${name},
-        ${slug},
-        ${description},
-        ${parseFloat(price)},
-        ${parseInt(stock) || 0},
-        ${categoryId},
-        ${image || '/placeholder.jpg'},
-        ${JSON.stringify(images || [])},
-        ${featured || false},
-        NOW(),
-        NOW()
-      )
-      RETURNING *
-    `
+    // Create product using simple DB helper
+    const product = await products.create({
+      id,
+      name,
+      slug,
+      description,
+      price: parseFloat(price),
+      stock: parseInt(stock) || 0,
+      categoryId,
+      image: image || '/placeholder.jpg',
+      images: JSON.stringify(images || []),
+      featured: featured || false
+    })
 
-    console.log('POST /api/admin/products - Insert result:', productResult)
-
-    if (!Array.isArray(productResult) || productResult.length === 0) {
+    if (!product) {
       throw new Error('Failed to create product: no data returned from database')
     }
 
-    const product = productResult[0]
-
     // Get category info
-    const categoryResult = await sql`
-      SELECT * FROM "Category" WHERE id = ${categoryId} LIMIT 1
-    `
-    
-    const category = Array.isArray(categoryResult) && categoryResult.length > 0 
-      ? categoryResult[0] 
-      : null
+    const category = await categories.getById?.(categoryId) || 
+                     await categories.getBySlug(categoryId)
 
     // Format product with category
     const formattedProduct = {
       ...product,
-      images: product.images ? JSON.parse(product.images) : [],
+      images: product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [],
       category: category ? {
         id: category.id,
         name: category.name,
@@ -206,11 +171,8 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Delete products using SQL
-    // Delete products one by one for compatibility across different PostgreSQL clients
-    for (const id of ids) {
-      await sql`DELETE FROM "Product" WHERE id = ${id}`
-    }
+    // Delete products using simple DB helper
+    await products.deleteMany(ids)
 
     return NextResponse.json({ 
       success: true, 
