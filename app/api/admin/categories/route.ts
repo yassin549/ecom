@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCategories, createCategory, getCategoryBySlug } from '@/lib/db/neon'
+import { prisma } from '@/lib/db/prisma'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
-export const runtime = 'edge'
 
 // Get all categories (Admin only)
 export async function GET(request: NextRequest) {
@@ -17,7 +16,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const categories = await getCategories()
+    const categories = await prisma.category.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    })
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)
@@ -52,7 +55,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if slug already exists
-    const existing = await getCategoryBySlug(slug)
+    const existing = await prisma.category.findUnique({
+      where: { slug },
+    })
 
     if (existing) {
       return NextResponse.json(
@@ -62,7 +67,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create category
-    const category = await createCategory({ name, slug, description, image })
+    const category = await prisma.category.create({
+      data: {
+        name,
+        slug,
+        description: description || null,
+        image: image || null,
+      },
+    })
 
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
