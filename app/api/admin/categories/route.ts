@@ -67,9 +67,12 @@ export async function POST(request: NextRequest) {
     }
     
     // Check if slug already exists
-    const existing = await sql`
+    const existingResult = await sql`
       SELECT id FROM "Category" WHERE slug = ${slug} LIMIT 1
     `
+    
+    // neon returns an array directly
+    const existing = Array.isArray(existingResult) ? existingResult : [existingResult]
 
     if (existing && existing.length > 0) {
       return NextResponse.json(
@@ -98,11 +101,13 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `
 
-    // Handle result (neon returns array)
-    const category = Array.isArray(categoryResult) ? categoryResult[0] : categoryResult
+    // neon returns an array directly - get first element
+    const category = Array.isArray(categoryResult) 
+      ? (categoryResult.length > 0 ? categoryResult[0] : null)
+      : categoryResult
     
     if (!category) {
-      throw new Error('Failed to create category: no data returned')
+      throw new Error('Failed to create category: no data returned from database')
     }
 
     return NextResponse.json(category, { status: 201 })

@@ -1,10 +1,10 @@
-import { neon, neonConfig } from '@neondatabase/serverless'
+import { neon } from '@neondatabase/serverless'
 
-// Configure neon for better compatibility
-neonConfig.fetchConnectionCache = true
+// Lazy initialization to avoid build-time errors
+let sqlClient: ReturnType<typeof neon> | null = null
 
 // Get connection string from environment
-const getConnectionString = (): string => {
+function getConnectionString(): string {
   // Try different environment variable names
   const connectionString = 
     process.env.DATABASE_URL || 
@@ -23,7 +23,12 @@ const getConnectionString = (): string => {
   return connectionString
 }
 
-// Create neon client - works perfectly with Supabase
-const connectionString = getConnectionString()
-export const sql = neon(connectionString)
+// Create neon client lazily - works perfectly with Supabase
+export function sql(strings: TemplateStringsArray, ...values: any[]): Promise<any> {
+  if (!sqlClient) {
+    const connectionString = getConnectionString()
+    sqlClient = neon(connectionString)
+  }
+  return sqlClient(strings, ...values)
+}
 
