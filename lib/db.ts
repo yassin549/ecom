@@ -1,4 +1,17 @@
-import { prisma } from './prisma'
+// Lazy-load prisma to avoid initialization errors on Vercel when only using SQL
+let _prisma: any = null
+const getPrisma = () => {
+  if (!_prisma) {
+    try {
+      _prisma = require('./prisma').prisma
+    } catch (error) {
+      console.error('Failed to load Prisma (this is OK if using SQL only):', error)
+      // Return null if Prisma fails - routes using it will handle the error
+      return null
+    }
+  }
+  return _prisma
+}
 
 // Detect if running on Vercel
 const isVercel = process.env.VERCEL === '1'
@@ -40,6 +53,8 @@ export const db = {
       const { rows } = await query
       return rows
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.product.findMany({
       take: limit,
     })
@@ -51,6 +66,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Product" WHERE id = ${id}`
       return rows[0] || null
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.product.findUnique({
       where: { id },
     })
@@ -62,6 +79,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Product" WHERE slug = ${slug}`
       return rows[0] || null
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.product.findUnique({
       where: { slug },
     })
@@ -77,6 +96,8 @@ export const db = {
       `
       return rows
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.product.findMany({
       where: {
         OR: [
@@ -94,6 +115,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Category"`
       return rows
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.category.findMany()
   },
 
@@ -103,6 +126,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Category" WHERE slug = ${slug}`
       return rows[0] || null
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.category.findUnique({
       where: { slug },
     })
@@ -115,6 +140,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Order" ORDER BY "createdAt" DESC`
       return rows
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
     })
@@ -126,6 +153,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "Order" WHERE id = ${id}`
       return rows[0] || null
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.order.findUnique({
       where: { id },
     })
@@ -141,6 +170,8 @@ export const db = {
       `
       return rows[0]
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.order.create({
       data,
     })
@@ -153,6 +184,8 @@ export const db = {
       const { rows } = await sql`SELECT * FROM "User" WHERE email = ${email}`
       return rows[0] || null
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.user.findUnique({
       where: { email },
     })
@@ -168,6 +201,8 @@ export const db = {
       `
       return rows[0]
     }
+    const prisma = getPrisma()
+    if (!prisma) throw new Error('Prisma not available')
     return await prisma.user.create({
       data,
     })

@@ -28,16 +28,33 @@ function getPrisma(): PrismaClient {
 
   // Development or when global exists
   if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    })
+    try {
+      globalForPrisma.prisma = new PrismaClient({
+        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+      })
+    } catch (error) {
+      console.error('Failed to initialize Prisma Client in development:', error)
+      throw error
+    }
   }
 
   prismaInstance = globalForPrisma.prisma
   return prismaInstance
 }
 
-export const prisma = getPrisma()
+// LAZY EXPORT: Use getter to avoid immediate initialization
+// This ensures Prisma is only initialized when actually accessed
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const instance = getPrisma()
+    const value = (instance as any)[prop]
+    // If it's a function, bind it to the instance
+    if (typeof value === 'function') {
+      return value.bind(instance)
+    }
+    return value
+  }
+}) as PrismaClient
 
 // Connection pool configuration
 export const connectDB = async () => {
