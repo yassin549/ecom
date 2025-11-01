@@ -2,15 +2,42 @@ import { PrismaClient } from '@prisma/client'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const globalForPrisma = global as unknown as { prisma: PrismaClient | undefined }
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
+// Lazy initialization to avoid Prisma errors during serverless function startup
+let prismaInstance: PrismaClient | null = null
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+function getPrisma(): PrismaClient {
+  if (prismaInstance) {
+    return prismaInstance
+  }
+
+  // In production on Vercel, create new instance each time if global doesn't exist
+  if (process.env.VERCEL === '1' && !globalForPrisma.prisma) {
+    try {
+      prismaInstance = new PrismaClient({
+        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+      })
+      return prismaInstance
+    } catch (error) {
+      console.error('Failed to initialize Prisma Client:', error)
+      // Return a mock instance that will fail gracefully
+      throw new Error('Prisma Client initialization failed. Please check your deployment configuration.')
+    }
+  }
+
+  // Development or when global exists
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    })
+  }
+
+  prismaInstance = globalForPrisma.prisma
+  return prismaInstance
+}
+
+export const prisma = getPrisma()
 
 // Connection pool configuration
 export const connectDB = async () => {
