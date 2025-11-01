@@ -27,18 +27,3 @@ const getConnectionString = (): string => {
 const connectionString = getConnectionString()
 export const sql = neon(connectionString)
 
-// Helper function to execute queries safely
-export async function executeQuery<T = any>(
-  query: TemplateStringsArray,
-  ...values: any[]
-): Promise<T[]> {
-  try {
-    const result = await sql(query, ...values)
-    // Handle both array and object results
-    return Array.isArray(result) ? result : [result]
-  } catch (error) {
-    console.error('Database query error:', error)
-    throw error
-  }
-}
-
