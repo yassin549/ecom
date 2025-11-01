@@ -21,10 +21,11 @@ function createPrismaClient() {
   }
   
   const pool = new Pool({ connectionString })
+  // @ts-ignore - Type mismatch between Prisma and Neon adapter
   const adapter = new PrismaNeon(pool)
   
   return new PrismaClient({
-    // @ts-ignore - Type mismatch between Prisma and Neon adapter
+    // @ts-ignore
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
