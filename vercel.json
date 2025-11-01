@@ -80,11 +80,11 @@
     }
   },
   "functions": {
-    "app/api/**": {
-      "maxDuration": 10,
-      "includeFiles": "{node_modules/.prisma/client/**,node_modules/@prisma/client/**}"
+    "app/api/**/*.{js,ts}": {
+      "maxDuration": 10
     }
   },
+  "outputDirectory": ".next",
   "crons": [
     {
       "path": "/api/cron/cleanup",
