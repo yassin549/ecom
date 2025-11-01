@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/db'
+// Import SQL-only client - completely independent of Prisma
+import { sql } from '@/lib/db/sql-only'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
