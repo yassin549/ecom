@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
+import { getSql } from '@/lib/vercel-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -16,11 +16,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const categories = await prisma.category.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    })
+    const sql = await getSql()
+    const categories = await sql`
+      SELECT * FROM "Category" 
+      ORDER BY name ASC
+    `
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)
@@ -54,28 +54,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const sql = await getSql()
+    
     // Check if slug already exists
-    const existing = await prisma.category.findUnique({
-      where: { slug },
-    })
+    const existing = await sql`
+      SELECT * FROM "Category" WHERE slug = ${slug}
+    `
 
-    if (existing) {
+    if (existing && existing.length > 0) {
       return NextResponse.json(
         { error: 'A category with this slug already exists' },
         { status: 400 }
       )
     }
 
-    // Create category
-    const category = await prisma.category.create({
-      data: {
-        name,
-        slug,
-        description: description || null,
-        image: image || null,
-      },
-    })
+    // Generate a unique ID (similar to CUID format)
+    const id = `clx${Date.now().toString(36)}${Math.random().toString(36).substring(2)}`
 
+    // Create category
+    const categoryResult = await sql`
+      INSERT INTO "Category" (id, name, slug, description, image, "createdAt", "updatedAt")
+      VALUES (
+        ${id},
+        ${name},
+        ${slug},
+        ${description || null},
+        ${image || null},
+        NOW(),
+        NOW()
+      )
+      RETURNING *
+    `
+
+    const category = categoryResult[0]
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     console.error('Error creating category:', error)
