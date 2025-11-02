@@ -4,8 +4,10 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Star, Minus, Plus, ShoppingCart, Heart, Share2, Check } from "lucide-react"
 import { useCartStore } from "@/lib/store/cart-store"
+import { useFavoritesStore } from "@/lib/store/favorites-store"
 import { formatPrice } from "@/lib/currency"
 import confetti from "canvas-confetti"
+import toast from "react-hot-toast"
 
 type Product = {
   id: string
@@ -26,6 +28,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [copied, setCopied] = useState(false)
   const addItem = useCartStore((state) => state.addItem)
+  const { addFavorite, removeFavorite, isFavorite } = useFavoritesStore()
+  const isInFavorites = isFavorite(product.id)
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => {
@@ -66,6 +70,21 @@ export function ProductInfo({ product }: ProductInfoProps) {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error("Failed to copy:", err)
+    }
+  }
+
+  const handleToggleFavorite = () => {
+    if (isInFavorites) {
+      removeFavorite(product.id)
+      toast.success('Retiré des favoris')
+    } else {
+      addFavorite({
+        productId: product.id,
+        productName: product.name,
+        productPrice: product.price,
+        productImage: '', // Will be filled from product data
+      })
+      toast.success('Ajouté aux favoris!')
     }
   }
 
@@ -191,10 +210,15 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="py-3 bg-white border-2 border-gray-200 hover:border-indigo-600 text-gray-900 font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+            onClick={handleToggleFavorite}
+            className={`py-3 bg-white border-2 ${
+              isInFavorites 
+                ? 'border-red-500 text-red-600' 
+                : 'border-gray-200 hover:border-indigo-600 text-gray-900'
+            } font-medium rounded-xl transition-all flex items-center justify-center gap-2`}
           >
-            <Heart className="h-5 w-5" />
-            Favoris
+            <Heart className={`h-5 w-5 ${isInFavorites ? 'fill-red-500' : ''}`} />
+            {isInFavorites ? 'Dans les favoris' : 'Favoris'}
           </motion.button>
 
           <motion.button

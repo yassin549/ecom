@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { ProductGallery } from "@/components/product/product-gallery"
 import { ProductInfo } from "@/components/product/product-info"
-import { ProductReviews } from "@/components/product/product-reviews"
+import { ProductReviewsDynamic } from "@/components/product/product-reviews-dynamic"
 import { RelatedProducts } from "@/components/product/related-products"
 import { Breadcrumbs } from "@/components/product/breadcrumbs"
 import { Metadata } from "next"
@@ -84,13 +84,18 @@ export default async function ProductPage({ params }: Props) {
     },
   })
 
-  // Generate gallery images (for now, using the main image multiple times)
-  const galleryImages = [
-    product.image,
-    product.image,
-    product.image,
-    product.image,
-  ].filter(Boolean) as string[]
+  // Parse images from JSON string
+  let galleryImages: string[] = []
+  try {
+    const parsedImages = typeof product.images === 'string' 
+      ? JSON.parse(product.images) 
+      : product.images
+    galleryImages = Array.isArray(parsedImages) && parsedImages.length > 0
+      ? parsedImages
+      : [product.image, product.image, product.image].filter(Boolean)
+  } catch {
+    galleryImages = [product.image, product.image, product.image].filter(Boolean)
+  }
 
   return (
     <div className="min-h-screen">
@@ -115,9 +120,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         {/* Reviews Section */}
-        <Suspense fallback={<div className="py-12 text-center">Chargement des avis...</div>}>
-          <ProductReviews productId={product.id} />
-        </Suspense>
+        <ProductReviewsDynamic productId={product.id} />
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (

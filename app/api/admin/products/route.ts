@@ -93,16 +93,26 @@ export async function POST(request: NextRequest) {
 
     console.log('POST /api/admin/products - Creating product with id:', id)
 
+    // Parse and validate price
+    const parsedPrice = typeof price === 'string' ? parseFloat(price) : price
+    const validPrice = isNaN(parsedPrice) ? 0 : parsedPrice
+
+    console.log('POST /api/admin/products - Price parsing:', {
+      original: price,
+      parsed: parsedPrice,
+      valid: validPrice
+    })
+
     // Create product using simple DB helper
     const product = await products.create({
       id,
       name,
       slug,
       description,
-      price: parseFloat(price),
+      price: validPrice,
       stock: parseInt(stock) || 0,
       categoryId,
-      image: image || '/placeholder.jpg',
+      image: image || '/placeholder.svg',
       images: JSON.stringify(images || []),
       featured: featured || false
     })

@@ -7,23 +7,9 @@ let _sqlClient: any = null
 
 async function getSqlClient() {
   if (!_sqlClient) {
-    try {
-      // Try Vercel Postgres first (it's installed and works on Vercel)
-      const { sql } = await import('@vercel/postgres')
-      _sqlClient = sql
-      console.log('[SIMPLE-DB] Using Vercel Postgres')
-    } catch (error) {
-      // Fallback to Neon if Vercel Postgres fails
-      try {
-        // @ts-ignore - Optional dependency, may not be installed
-        const { neon } = await import('@neondatabase/serverless')
-        const connectionString = getConnectionString()
-        _sqlClient = neon(connectionString)
-        console.log('[SIMPLE-DB] Using Neon as fallback')
-      } catch (fallbackError) {
-        throw new Error('No SQL client available. Please install @vercel/postgres or @neondatabase/serverless')
-      }
-    }
+    // Use Vercel Postgres (installed and works everywhere)
+    const { sql } = await import('@vercel/postgres')
+    _sqlClient = sql
   }
   return _sqlClient
 }
