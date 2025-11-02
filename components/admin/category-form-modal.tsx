@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Upload, Loader2, FolderOpen } from "lucide-react"
+import { X, Upload, Loader2, FolderOpen, Link } from "lucide-react"
 import toast from "react-hot-toast"
 
 type Category = {
@@ -33,6 +33,9 @@ export function CategoryFormModal({
     image: category?.image || null,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [imageInputMode, setImageInputMode] = useState<'url' | 'upload'>('upload')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Auto-generate slug from name
   const handleNameChange = (name: string) => {
@@ -46,6 +49,53 @@ export function CategoryFormModal({
 
   const handleImageUrlChange = (url: string) => {
     setFormData({ ...formData, image: url || null })
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Format non supporté. Utilisez JPG, PNG, WebP ou GIF')
+      return
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image trop grande. Maximum 5MB')
+      return
+    }
+
+    setUploadingImage(true)
+    try {
+      // Upload to server
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'x-user-role': 'admin',
+        },
+        body: uploadFormData,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.details || 'Upload failed')
+      }
+
+      const data = await response.json()
+      setFormData({ ...formData, image: data.url })
+      toast.success('Image téléchargée avec succès')
+    } catch (error: any) {
+      console.error('Error uploading image:', error)
+      toast.error(error.message || 'Erreur lors du téléchargement')
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,53 +228,142 @@ export function CategoryFormModal({
                       />
                     </div>
 
-                    {/* Image URL */}
+                    {/* Image Section */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Image de la catégorie (URL)
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Image de la catégorie
                       </label>
-                      <input
-                        type="url"
-                        value={formData.image || ""}
-                        onChange={(e) => handleImageUrlChange(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none transition-colors"
-                        placeholder="https://example.com/image.jpg"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Entrez l'URL d'une image (doit commencer par http:// ou https://)
-                      </p>
-                      
-                      {/* Image Preview */}
-                      {formData.image && formData.image.startsWith('http') && (
-                        <div className="mt-3 relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
-                          <img
-                            src={formData.image}
-                            alt="Aperçu"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = '/placeholder.jpg'
-                              toast.error('Image invalide ou inaccessible')
-                            }}
+
+                      {/* Mode Tabs */}
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          type="button"
+                          onClick={() => setImageInputMode('upload')}
+                          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                            imageInputMode === 'upload'
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          <Upload className="h-4 w-4 inline mr-2" />
+                          Télécharger
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setImageInputMode('url')}
+                          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                            imageInputMode === 'url'
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          <Link className="h-4 w-4 inline mr-2" />
+                          URL
+                        </button>
+                      </div>
+
+                      {/* Upload Mode */}
+                      {imageInputMode === 'upload' && (
+                        <div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                            onChange={handleFileUpload}
+                            className="hidden"
                           />
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, image: null })}
-                            className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-lg"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
+                          {formData.image ? (
+                            <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
+                              <img
+                                src={formData.image}
+                                alt="Aperçu"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder.svg'
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, image: null })}
+                                className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-lg"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploadingImage}
+                              className="w-full h-48 border-2 border-dashed border-gray-300 rounded-xl hover:border-indigo-400 transition-colors flex flex-col items-center justify-center gap-3 disabled:opacity-50"
+                            >
+                              {uploadingImage ? (
+                                <>
+                                  <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+                                  <span className="text-sm text-gray-600">Téléchargement...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="h-8 w-8 text-gray-400" />
+                                  <span className="text-sm text-gray-600 font-medium">
+                                    Cliquez pour télécharger une image
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    JPG, PNG, WebP, GIF (max 5MB)
+                                  </span>
+                                </>
+                              )}
+                            </button>
+                          )}
                         </div>
                       )}
-                    </div>
 
-                    {/* Suggested Images */}
-                    <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
-                      <p className="text-sm font-medium text-indigo-900 mb-2">💡 Images gratuites suggérées:</p>
-                      <div className="text-xs text-indigo-700 space-y-1">
-                        <p>• <a href="https://unsplash.com" target="_blank" className="underline hover:text-indigo-900">Unsplash.com</a> - Images haute qualité</p>
-                        <p>• <a href="https://pexels.com" target="_blank" className="underline hover:text-indigo-900">Pexels.com</a> - Photos libres de droits</p>
-                        <p>• Utilisez l'URL directe de l'image (clic droit → Copier l'adresse de l'image)</p>
-                      </div>
+                      {/* URL Mode */}
+                      {imageInputMode === 'url' && (
+                        <div>
+                          <input
+                            type="url"
+                            value={formData.image || ""}
+                            onChange={(e) => handleImageUrlChange(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none transition-colors"
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Collez l'URL d'une image (doit commencer par http:// ou https://)
+                          </p>
+                          
+                          {/* Image Preview */}
+                          {formData.image && formData.image.startsWith('http') && (
+                            <div className="mt-3 relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
+                              <img
+                                src={formData.image}
+                                alt="Aperçu"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder.svg'
+                                  toast.error('Image invalide ou inaccessible')
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, image: null })}
+                                className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-lg"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Suggested Images */}
+                          <div className="mt-3 bg-indigo-50 rounded-lg p-3 border border-indigo-100">
+                            <p className="text-xs font-medium text-indigo-900 mb-1">💡 Images gratuites:</p>
+                            <p className="text-xs text-indigo-700">
+                              <a href="https://unsplash.com" target="_blank" className="underline hover:text-indigo-900">Unsplash</a> · 
+                              <a href="https://pexels.com" target="_blank" className="underline hover:text-indigo-900 ml-1">Pexels</a>
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

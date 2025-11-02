@@ -119,15 +119,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate image URL if provided
-    if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid image URL',
-          details: 'Image must be a valid HTTP/HTTPS URL'
-        },
-        { status: 400 }
-      )
+    // Validate image URL/path if provided
+    if (image) {
+      const isValidUrl = image.startsWith('http://') || image.startsWith('https://')
+      const isValidPath = image.startsWith('/uploads/') || image.startsWith('/placeholder')
+      
+      if (!isValidUrl && !isValidPath) {
+        return NextResponse.json(
+          { 
+            error: 'Invalid image',
+            details: 'Image must be a valid HTTP/HTTPS URL or uploaded file path'
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Create category in database

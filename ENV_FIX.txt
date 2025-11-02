@@ -1,0 +1,13 @@
+NEXT_PUBLIC_SUPABASE_URL="https://pumbdvvzrpqpheefietj.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1bWJkdnZ6cnBxcGhlZWZpZXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2MzQ1MDYsImV4cCI6MjA3NzIxMDUwNn0.DvEnqdn4zMaTIfkdxxx9BvDHrmsWkIb9wgRodltDfcg"
+RESEND_API_KEY="re_Qgp3fqmL_Hd6udVcHybZ8b8C8RistRXGU"
+NEXTAUTH_SECRET="8K7mN9pQ2rS5tU6vW8xY0zA1bC3dE4fG5hI7jK9lM1nO3pQ5rS7tU9vW"
+NEXTAUTH_URL="http://localhost:3000"
+ADMIN_PASSWORD="admin123"
+
+# PostgreSQL Connection - Neon Database
+DATABASE_URL="postgresql://neondb_owner:npg_5Ljyizpw6sOm@ep-restless-night-ad8b0xqq-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+DIRECT_URL="postgresql://neondb_owner:npg_5Ljyizpw6sOm@ep-restless-night-ad8b0xqq-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+# THIS IS THE MISSING LINE - @vercel/postgres looks for POSTGRES_URL!
+POSTGRES_URL="postgresql://neondb_owner:npg_5Ljyizpw6sOm@ep-restless-night-ad8b0xqq-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
