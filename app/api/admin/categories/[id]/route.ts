@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
+// Simple database layer - NO PRISMA
+import { categories } from '@/lib/db/simple-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -32,14 +33,9 @@ export async function PUT(
     }
 
     // Check if slug is taken by another category
-    const existing = await prisma.category.findFirst({
-      where: {
-        slug,
-        NOT: { id },
-      },
-    })
+    const existing = await categories.getBySlug(slug)
 
-    if (existing) {
+    if (existing && existing.id !== id) {
       return NextResponse.json(
         { error: 'A category with this slug already exists' },
         { status: 400 }
@@ -47,15 +43,19 @@ export async function PUT(
     }
 
     // Update category
-    const category = await prisma.category.update({
-      where: { id },
-      data: {
-        name,
-        slug,
-        description: description || null,
-        image: image || null,
-      },
+    const category = await categories.update(id, {
+      name,
+      slug,
+      description: description || null,
+      image: image || null,
     })
+
+    if (!category) {
+      return NextResponse.json(
+        { error: 'Category not found' },
+        { status: 404 }
+      )
+    }
 
     return NextResponse.json(category)
   } catch (error) {
@@ -85,9 +85,7 @@ export async function DELETE(
     const { id } = await params
 
     // Check if category has products
-    const productsCount = await prisma.product.count({
-      where: { categoryId: id },
-    })
+    const productsCount = await categories.countProducts(id)
 
     if (productsCount > 0) {
       return NextResponse.json(
@@ -96,9 +94,7 @@ export async function DELETE(
       )
     }
 
-    await prisma.category.delete({
-      where: { id },
-    })
+    await categories.delete(id)
 
     return NextResponse.json({ success: true })
   } catch (error) {

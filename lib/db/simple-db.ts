@@ -2,7 +2,31 @@
 // Direct SQL queries with simple helper functions
 // Works with any PostgreSQL database (Neon, Supabase, Vercel Postgres, etc.)
 
-import { neon } from '@neondatabase/serverless'
+// Lazy-load SQL client to avoid build-time issues
+let _sqlClient: any = null
+
+async function getSqlClient() {
+  if (!_sqlClient) {
+    try {
+      // Try Vercel Postgres first (it's installed and works on Vercel)
+      const { sql } = await import('@vercel/postgres')
+      _sqlClient = sql
+      console.log('[SIMPLE-DB] Using Vercel Postgres')
+    } catch (error) {
+      // Fallback to Neon if Vercel Postgres fails
+      try {
+        // @ts-ignore - Optional dependency, may not be installed
+        const { neon } = await import('@neondatabase/serverless')
+        const connectionString = getConnectionString()
+        _sqlClient = neon(connectionString)
+        console.log('[SIMPLE-DB] Using Neon as fallback')
+      } catch (fallbackError) {
+        throw new Error('No SQL client available. Please install @vercel/postgres or @neondatabase/serverless')
+      }
+    }
+  }
+  return _sqlClient
+}
 
 // Get database connection
 function getConnectionString(): string {
@@ -22,15 +46,13 @@ function getConnectionString(): string {
   return connectionString
 }
 
-// Create SQL client
-const sql = neon(getConnectionString())
-
 // Simple query helper - always returns array of rows
 export async function query<T = any>(
   queryText: string,
   params: any[] = []
 ): Promise<T[]> {
   try {
+    const sql = await getSqlClient()
     // Neon uses parameterized queries with $1, $2, etc.
     if (params.length > 0) {
       // Query already has $1, $2 placeholders
@@ -70,7 +92,8 @@ export async function query<T = any>(
 // Tagged template SQL helper (like sql`SELECT * FROM users`)
 export const sqlTemplate = async (strings: TemplateStringsArray, ...values: any[]): Promise<any[]> => {
   try {
-    const result = await sql(strings, ...values) as any
+    const sqlClient = await getSqlClient()
+    const result = await sqlClient(strings, ...values) as any
     
     // Normalize response
     if (Array.isArray(result)) {
@@ -136,8 +159,8 @@ export const categories = {
     updates.push(`"updatedAt" = NOW()`)
     values.push(id)
     
-    const query = `UPDATE "Category" SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`
-    const result = await query(query, values)
+    const queryText = `UPDATE "Category" SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`
+    const result = await query(queryText, values)
     return result[0] || null
   },
   
@@ -222,12 +245,12 @@ export const products = {
     const values: any[] = []
     let paramIndex = 1
 
-    const fields = ['name', 'slug', 'description', 'price', 'stock', 'categoryId', 'image', 'images', 'featured']
+    const fields = ['name', 'slug', 'description', 'price', 'stock', 'categoryId', 'image', 'images', 'featured'] as const
     for (const field of fields) {
-      if (data[field as keyof typeof data] !== undefined) {
+      if (data[field] !== undefined) {
         const dbField = field === 'categoryId' ? '"categoryId"' : field
         updates.push(`${dbField} = $${paramIndex++}`)
-        values.push(data[field as keyof typeof data])
+        values.push(data[field])
       }
     }
     

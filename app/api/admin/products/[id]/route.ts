@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
+// Simple database layer - NO PRISMA
+import { products } from '@/lib/db/simple-db'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -38,25 +39,43 @@ export async function PUT(
       .replace(/(^-|-$)/g, '')
 
     // Update product
-    const product = await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        slug,
-        description,
-        price: parseFloat(price),
-        stock: parseInt(stock) || 0,
-        categoryId,
-        image: image || '/placeholder.jpg',
-        images: JSON.stringify(images || []),
-        featured: featured || false,
-      },
-      include: {
-        category: true,
-      },
+    const product = await products.update(id, {
+      name,
+      slug,
+      description,
+      price: parseFloat(price),
+      stock: parseInt(stock) || 0,
+      categoryId,
+      image: image || '/placeholder.jpg',
+      images: JSON.stringify(images || []),
+      featured: featured || false,
     })
 
-    return NextResponse.json(product)
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      )
+    }
+
+    // Get category info
+    const { categories } = await import('@/lib/db/simple-db')
+    const category = await categories.getById(product.categoryId)
+
+    // Format product with category
+    const formattedProduct = {
+      ...product,
+      images: product.images ? (typeof product.images === 'string' ? JSON.parse(product.images) : product.images) : [],
+      category: category ? {
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        image: category.image,
+      } : null,
+    }
+
+    return NextResponse.json(formattedProduct)
   } catch (error) {
     console.error('Error updating product:', error)
     return NextResponse.json(
@@ -82,9 +101,7 @@ export async function DELETE(
     }
 
     const { id } = await params
-    await prisma.product.delete({
-      where: { id },
-    })
+    await products.delete(id)
 
     return NextResponse.json({ success: true })
   } catch (error) {
