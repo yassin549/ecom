@@ -1,23 +1,35 @@
+/**
+ * PUBLIC CATEGORIES API
+ * Fetches all categories for the storefront
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
-import { categories } from '@/lib/db/simple-db'
+import { categoryDB } from '@/lib/database'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 60 // Cache for 60 seconds
 
-// Get all categories
+// Get all categories (public)
 export async function GET(request: NextRequest) {
   try {
-    const allCategories = await categories.getAll()
-    return NextResponse.json(allCategories)
+    const categories = await categoryDB.getAll()
+    
+    const response = NextResponse.json(categories)
+    
+    // Add cache headers for better performance
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=60, stale-while-revalidate=300'
+    )
+    
+    return response
   } catch (error: any) {
-    console.error('Error fetching categories:', {
-      message: error?.message,
-      code: error?.code
-    })
+    console.error('[GET /api/categories] ERROR:', error.message)
+    
     return NextResponse.json(
       { 
         error: 'Failed to fetch categories',
-        details: error?.message || 'Unknown error'
+        details: error.message
       },
       { status: 500 }
     )

@@ -1,106 +1,121 @@
+/**
+ * CATEGORY BY ID API ROUTES
+ * Update and Delete operations
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
-// Simple database layer - NO PRISMA
-import { categories } from '@/lib/db/simple-db'
+import { categoryDB } from '@/lib/database'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// Update category (Admin only)
+// ============================================================================
+// PUT - Update category
+// ============================================================================
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const startTime = Date.now()
+  
   try {
     const isAdmin = request.headers.get('x-user-role') === 'admin'
-    
     if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     const { id } = await params
     const body = await request.json()
     const { name, slug, description, image } = body
 
+    console.log(`[PUT /api/admin/categories/${id}] Update request:`, { name, slug })
+
     // Validate required fields
-    if (!name || !slug) {
+    if (!name?.trim() || !slug?.trim()) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Name and slug are required' },
         { status: 400 }
       )
     }
 
-    // Check if slug is taken by another category
-    const existing = await categories.getBySlug(slug)
-
-    if (existing && existing.id !== id) {
+    // Validate slug format
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+    if (!slugRegex.test(slug)) {
       return NextResponse.json(
-        { error: 'A category with this slug already exists' },
+        { error: 'Invalid slug format' },
+        { status: 400 }
+      )
+    }
+
+    // Validate image URL if provided
+    if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
+      return NextResponse.json(
+        { error: 'Image must be a valid URL' },
         { status: 400 }
       )
     }
 
     // Update category
-    const category = await categories.update(id, {
-      name,
-      slug,
-      description: description || null,
-      image: image || null,
+    const category = await categoryDB.update(id, {
+      name: name.trim(),
+      slug: slug.trim(),
+      description: description?.trim() || null,
+      image: image?.trim() || null,
     })
 
-    if (!category) {
-      return NextResponse.json(
-        { error: 'Category not found' },
-        { status: 404 }
-      )
-    }
+    const duration = Date.now() - startTime
+    console.log(`[PUT /api/admin/categories/${id}] Success (${duration}ms)`)
 
     return NextResponse.json(category)
-  } catch (error) {
-    console.error('Error updating category:', error)
+  } catch (error: any) {
+    const duration = Date.now() - startTime
+    console.error(`[PUT /api/admin/categories] ERROR (${duration}ms):`, error.message)
+    
     return NextResponse.json(
-      { error: 'Failed to update category' },
+      { 
+        error: 'Failed to update category',
+        details: error.message
+      },
       { status: 500 }
     )
   }
 }
 
-// Delete category (Admin only)
+// ============================================================================
+// DELETE - Delete category
+// ============================================================================
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const startTime = Date.now()
+  
   try {
     const isAdmin = request.headers.get('x-user-role') === 'admin'
-    
     if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     const { id } = await params
 
-    // Check if category has products
-    const productsCount = await categories.countProducts(id)
+    console.log(`[DELETE /api/admin/categories/${id}] Deleting category...`)
 
-    if (productsCount > 0) {
-      return NextResponse.json(
-        { error: `Cannot delete category with ${productsCount} product(s)` },
-        { status: 400 }
-      )
-    }
+    // Delete category (database layer checks for products)
+    await categoryDB.delete(id)
 
-    await categories.delete(id)
+    const duration = Date.now() - startTime
+    console.log(`[DELETE /api/admin/categories/${id}] Success (${duration}ms)`)
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Error deleting category:', error)
+  } catch (error: any) {
+    const duration = Date.now() - startTime
+    console.error(`[DELETE /api/admin/categories] ERROR (${duration}ms):`, error.message)
+    
     return NextResponse.json(
-      { error: 'Failed to delete category' },
+      { 
+        error: 'Failed to delete category',
+        details: error.message
+      },
       { status: 500 }
     )
   }

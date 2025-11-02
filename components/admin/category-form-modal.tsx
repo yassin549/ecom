@@ -33,8 +33,6 @@ export function CategoryFormModal({
     image: category?.image || null,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [uploadingImage, setUploadingImage] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Auto-generate slug from name
   const handleNameChange = (name: string) => {
@@ -46,29 +44,8 @@ export function CategoryFormModal({
     setFormData({ ...formData, name, slug })
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingImage(true)
-    try {
-      // Convert to base64 for demo purposes
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string })
-        toast.success("Image ajoutée")
-        setUploadingImage(false)
-      }
-      reader.onerror = () => {
-        toast.error("Erreur lors du téléchargement")
-        setUploadingImage(false)
-      }
-      reader.readAsDataURL(file)
-    } catch (error) {
-      console.error("Error uploading image:", error)
-      toast.error("Erreur lors du téléchargement de l'image")
-      setUploadingImage(false)
-    }
+  const handleImageUrlChange = (url: string) => {
+    setFormData({ ...formData, image: url || null })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,56 +178,53 @@ export function CategoryFormModal({
                       />
                     </div>
 
-                    {/* Image */}
+                    {/* Image URL */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Image de la catégorie
+                        Image de la catégorie (URL)
                       </label>
                       <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
+                        type="url"
+                        value={formData.image || ""}
+                        onChange={(e) => handleImageUrlChange(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none transition-colors"
+                        placeholder="https://example.com/image.jpg"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Entrez l'URL d'une image (doit commencer par http:// ou https://)
+                      </p>
                       
-                      {formData.image ? (
-                        <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
+                      {/* Image Preview */}
+                      {formData.image && formData.image.startsWith('http') && (
+                        <div className="mt-3 relative w-full h-48 rounded-xl overflow-hidden border-2 border-gray-200">
                           <img
                             src={formData.image}
-                            alt="Category preview"
+                            alt="Aperçu"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.jpg'
+                              toast.error('Image invalide ou inaccessible')
+                            }}
                           />
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, image: null })}
-                            className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                            className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-lg"
                           >
                             <X className="h-4 w-4" />
                           </button>
                         </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={uploadingImage}
-                          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-xl hover:border-indigo-400 transition-colors flex flex-col items-center justify-center gap-3 disabled:opacity-50"
-                        >
-                          {uploadingImage ? (
-                            <>
-                              <Loader2 className="h-8 w-8 text-gray-400 animate-spin" />
-                              <span className="text-sm text-gray-600">Téléchargement...</span>
-                            </>
-                          ) : (
-                            <>
-                              <FolderOpen className="h-8 w-8 text-gray-400" />
-                              <span className="text-sm text-gray-600">
-                                Cliquez pour ajouter une image
-                              </span>
-                            </>
-                          )}
-                        </button>
                       )}
+                    </div>
+
+                    {/* Suggested Images */}
+                    <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+                      <p className="text-sm font-medium text-indigo-900 mb-2">💡 Images gratuites suggérées:</p>
+                      <div className="text-xs text-indigo-700 space-y-1">
+                        <p>• <a href="https://unsplash.com" target="_blank" className="underline hover:text-indigo-900">Unsplash.com</a> - Images haute qualité</p>
+                        <p>• <a href="https://pexels.com" target="_blank" className="underline hover:text-indigo-900">Pexels.com</a> - Photos libres de droits</p>
+                        <p>• Utilisez l'URL directe de l'image (clic droit → Copier l'adresse de l'image)</p>
+                      </div>
                     </div>
                   </div>
 
