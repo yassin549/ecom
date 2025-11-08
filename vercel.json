@@ -1,7 +1,7 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npx prisma generate && npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps && npx prisma generate",
   "framework": "nextjs",
   "regions": ["cdg1"],
   "github": {
@@ -78,7 +78,8 @@
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1",
       "PRISMA_GENERATE_SKIP_AUTOINSTALL": "false",
-      "SKIP_ENV_VALIDATION": "true"
+      "SKIP_ENV_VALIDATION": "true",
+      "PRISMA_SKIP_POSTINSTALL_GENERATE": "false"
     }
   },
   "functions": {
