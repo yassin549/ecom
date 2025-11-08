@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['@prisma/client', 'prisma'],
+  // Critical: External packages for Vercel serverless
+  serverExternalPackages: ['@prisma/client', '@prisma/engines'],
+  
   images: {
     remotePatterns: [
       {
@@ -18,10 +20,19 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', '@tanstack/react-table'],
+    // serverComponentsExternalPackages: ['@prisma/client', '@prisma/engines'],
   },
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
+  
+  // Webpack config for Prisma
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@prisma/client', '@prisma/engines')
+    }
+    return config
+  },
   
   // Turbopack config (empty to silence warning)
   turbopack: {},
