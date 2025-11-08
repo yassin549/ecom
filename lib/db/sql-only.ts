@@ -7,48 +7,18 @@ let _sql: any = null
 
 async function getSqlClient() {
   if (!_sql) {
-    // Try Vercel Postgres first (if available)
     try {
-      console.log('[SQL-ONLY] Attempting to load Vercel Postgres...')
+      console.log('[SQL-ONLY] Loading Vercel Postgres...')
       const vercelPostgres = await import('@vercel/postgres')
       _sql = vercelPostgres.sql
       console.log('[SQL-ONLY] ✅ Successfully loaded Vercel Postgres client')
     } catch (error: any) {
-      console.log('[SQL-ONLY] ⚠️ Vercel Postgres not available:', error?.message || error)
-      console.log('[SQL-ONLY] Falling back to Neon...')
-      
-      // Fallback to Neon if Vercel Postgres fails
-      try {
-        const { neon } = await import('@neondatabase/serverless')
-        const connectionString = 
-          process.env.DATABASE_URL || 
-          process.env.POSTGRES_URL || 
-          process.env.POSTGRES_PRISMA_URL
-        
-        if (!connectionString) {
-          const error = new Error(
-            'DATABASE_URL, POSTGRES_URL, or POSTGRES_PRISMA_URL environment variable is not set. ' +
-            'Please set one of these in your Vercel environment variables.'
-          )
-          console.error('[SQL-ONLY] ❌ Missing connection string:', error.message)
-          throw error
-        }
-        
-        _sql = neon(connectionString)
-        console.log('[SQL-ONLY] ✅ Successfully loaded Neon client as fallback')
-      } catch (fallbackError: any) {
-        console.error('[SQL-ONLY] ❌ Failed to load Neon fallback:', {
-          message: fallbackError?.message,
-          code: fallbackError?.code,
-          name: fallbackError?.name
-        })
-        const error = new Error(
-          'No SQL client available. ' +
-          'Failed to load both Vercel Postgres and Neon. ' +
-          'Please ensure DATABASE_URL is set in your Vercel environment variables.'
-        )
-        throw error
-      }
+      console.error('[SQL-ONLY] ❌ Failed to load Vercel Postgres:', error?.message || error)
+      const dbError = new Error(
+        'Failed to load Vercel Postgres. ' +
+        'Please ensure DATABASE_URL is set in your environment variables.'
+      )
+      throw dbError
     }
   }
   return _sql
@@ -58,7 +28,7 @@ async function getSqlClient() {
 type TemplateStringsArray = readonly string[]
 
 // Export sql function that works as a tagged template
-// Returns array of rows (normalized for both Vercel Postgres and Neon)
+// Returns array of rows from Vercel Postgres
 export const sql = (strings: TemplateStringsArray, ...values: any[]): Promise<any[]> => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -72,7 +42,7 @@ export const sql = (strings: TemplateStringsArray, ...values: any[]): Promise<an
       const result = await sqlFn(strings, ...values)
       
       // Normalize response format
-      // Vercel Postgres returns { rows }, Neon returns array directly
+      // Vercel Postgres returns { rows }
       if (result && typeof result === 'object' && 'rows' in result) {
         if (Array.isArray(result.rows)) {
           resolve(result.rows)

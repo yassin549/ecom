@@ -82,7 +82,16 @@ export default async function ProductPage({ params }: Props) {
   }
 
   // Fetch related products with error handling
-  let relatedProducts = []
+  let relatedProducts: Array<{
+    id: string
+    name: string
+    slug: string
+    price: number
+    image: string
+    rating: number
+    reviewCount: number
+  }> = []
+  
   try {
     relatedProducts = await prisma.product.findMany({
       where: {
