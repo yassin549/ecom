@@ -18,71 +18,92 @@ type Props = {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    select: {
-      name: true,
-      description: true,
-      image: true,
-      price: true,
-    },
-  })
+  
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        description: true,
+        image: true,
+        price: true,
+      },
+    })
 
-  if (!product) {
-    return {
-      title: "Produit non trouvé",
+    if (!product) {
+      return {
+        title: "Produit non trouvé",
+      }
     }
-  }
 
-  return {
-    title: `${product.name} - ShopHub`,
-    description: product.description || `Achetez ${product.name} sur ShopHub`,
-    openGraph: {
-      title: product.name,
-      description: product.description || "",
-      images: product.image ? [product.image] : [],
-    },
+    return {
+      title: `${product.name} - ShopHub`,
+      description: product.description || `Achetez ${product.name} sur ShopHub`,
+      openGraph: {
+        title: product.name,
+        description: product.description || "",
+        images: product.image ? [product.image] : [],
+      },
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: "Produit - ShopHub",
+      description: "Découvrez nos produits",
+    }
   }
 }
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params
 
-  // Fetch product with related data
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      category: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
+  // Fetch product with related data with error handling
+  let product
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
         },
       },
-    },
-  })
+    })
+  } catch (error) {
+    console.error('Error fetching product:', error)
+    throw new Error('Failed to load product. Please try again.')
+  }
 
   if (!product) {
     notFound()
   }
 
-  // Fetch related products
-  const relatedProducts = await prisma.product.findMany({
-    where: {
-      categoryId: product.categoryId,
-      id: { not: product.id },
-    },
-    take: 8,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      image: true,
-      rating: true,
-      reviewCount: true,
-    },
-  })
+  // Fetch related products with error handling
+  let relatedProducts = []
+  try {
+    relatedProducts = await prisma.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        id: { not: product.id },
+      },
+      take: 8,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        image: true,
+        rating: true,
+        reviewCount: true,
+      },
+    })
+  } catch (error) {
+    console.error('Error fetching related products:', error)
+    // Continue without related products rather than failing
+  }
 
   // Parse images from JSON string
   let galleryImages: string[] = []

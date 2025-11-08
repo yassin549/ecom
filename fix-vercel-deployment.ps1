@@ -56,12 +56,12 @@ git commit -m "fix: Update Prisma configuration for Vercel deployment"
 Write-Host "✅ Changes committed" -ForegroundColor Green
 Write-Host ""
 
-Write-Host "🎉 Ready to deploy!" -ForegroundColor Green
+Write-Host "Ready to deploy!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "1. Push to GitHub: git push origin main" -ForegroundColor White
 Write-Host "2. Vercel will auto-deploy" -ForegroundColor White
-Write-Host "3. Check deployment logs at: https://vercel.com/dashboard" -ForegroundColor White
+Write-Host "3. Check deployment logs" -ForegroundColor White
 Write-Host ""
 Write-Host "Or deploy manually:" -ForegroundColor Cyan
-Write-Host "npm run deploy:prod" -ForegroundColor White
+Write-Host "Run: npm run deploy:prod" -ForegroundColor White

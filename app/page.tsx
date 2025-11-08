@@ -37,8 +37,9 @@ export default async function Home() {
       LIMIT 8
     `
     featuredProducts = rows as unknown as Product[]
-  } catch {
-    featuredProducts = []
+  } catch (error) {
+    console.error('Error fetching featured products:', error)
+    // Continue with empty array - page will still load
   }
 
   return (
