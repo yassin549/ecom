@@ -39,6 +39,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: "/assets/logo.jpg",
+    shortcut: "/assets/logo.jpg",
+    apple: "/assets/logo.jpg",
+  },
 };
 
 export const viewport = {
@@ -54,13 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/assets/logo.jpg" />
-        <meta name="theme-color" content="#000000" />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <PageLoader />
         <AnimatedBackground />
         <QueryProvider>
