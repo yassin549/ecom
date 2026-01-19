@@ -1,3 +1,4 @@
+"use client"
 import { motion } from "framer-motion"
 import { Mail, Instagram, MessageCircle, Send, MapPin, Phone } from "lucide-react"
 
