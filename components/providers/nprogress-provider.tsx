@@ -14,7 +14,7 @@ NProgress.configure({
   speed: 500,
 })
 
-function NProgressContent({ children }: { children: React.ReactNode }) {
+function NProgressSideEffect() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -22,13 +22,16 @@ function NProgressContent({ children }: { children: React.ReactNode }) {
     NProgress.done()
   }, [pathname, searchParams])
 
-  return <>{children}</>
+  return null
 }
 
 export function NProgressProvider({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<>{children}</>}>
-      <NProgressContent>{children}</NProgressContent>
-    </Suspense>
+    <>
+      <Suspense fallback={null}>
+        <NProgressSideEffect />
+      </Suspense>
+      {children}
+    </>
   )
 }
