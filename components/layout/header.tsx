@@ -34,20 +34,19 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center space-x-2 text-xl sm:text-2xl font-bold text-gray-900"
-              aria-label="Home"
+              className="flex items-center gap-2 group transition-all"
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center space-x-2"
-              >
-                <img
+              <div className="relative w-10 h-10 overflow-hidden rounded-xl border-2 border-primary group-hover:scale-110 transition-transform">
+                <Image
                   src="/assets/logo.jpg"
                   alt="Drip Shop Logo"
-                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover"
+                  fill
+                  className="object-cover"
                 />
-                <span className="hidden sm:inline-block">Drip Shop</span>
-              </motion.div>
+              </div>
+              <span className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-foreground group-hover:text-primary transition-colors drop-shadow-[0_0_8px_rgba(147,51,234,0.3)]">
+                Drip <span className="text-primary line-through decoration-white/30 decoration-2">Shop</span>
+              </span>
             </Link>
 
             {/* Desktop Navigation */}

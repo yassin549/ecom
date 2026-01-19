@@ -82,33 +82,32 @@ export function Footer() {
   ]
 
   return (
-    <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="border-t border-border bg-card">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
-            <Link href="/" className="inline-block mb-4">
-              <span className="text-2xl font-bold text-gray-900">
-                Drip Shop
+          <div className="lg:col-span-2">
+            <Link href="/" className="inline-block mb-6 group transition-all">
+              <span className="text-3xl font-black italic uppercase tracking-tighter text-foreground group-hover:text-primary transition-colors drop-shadow-[0_0_8px_rgba(147,51,234,0.3)]">
+                Drip <span className="text-primary">Shop</span>
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-4">
-              Votre destination unique pour des produits de qualité à des prix incroyables.
+            <p className="text-lg text-muted-foreground mb-8 max-w-sm leading-relaxed font-medium">
+              Le numéro 1 du <span className="text-foreground font-bold">streetwear premium</span> en Tunisie. Pièces limitées, style illimité.
             </p>
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               {socialLinks.map((social) => {
                 const Icon = social.icon
                 return (
                   <motion.a
                     key={social.name}
                     href={social.href}
-                    whileHover={{ scale: 1.2, rotateY: 180 }}
-                    transition={{ duration: 0.3 }}
-                    className={`flex items-center justify-center w-9 h-9 rounded-full bg-accent text-muted-foreground transition-colors ${social.color}`}
+                    whileHover={{ scale: 1.1, y: -4 }}
+                    className={`flex items-center justify-center w-12 h-12 rounded-2xl bg-muted border-2 border-border text-foreground transition-all hover:border-primary hover:text-primary hover:shadow-lg hover:shadow-primary/20 shadow-inner`}
                     aria-label={social.name}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-5 w-5" />
                   </motion.a>
                 )
               })}
@@ -119,9 +118,9 @@ export function Footer() {
           <div>
             <button
               onClick={() => toggleSection('shop')}
-              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
+              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none mb-6"
             >
-              <h3 className="font-semibold mb-4">Boutique</h3>
+              <h3 className="font-black uppercase italic tracking-tighter text-lg">Boutique</h3>
               <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'shop' ? 'rotate-180' : ''
                 }`} />
             </button>
@@ -129,16 +128,17 @@ export function Footer() {
               {(expandedSection === 'shop' || isDesktop) && (
                 <motion.ul
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="space-y-2 md:block"
+                  className="space-y-3"
                 >
                   {footerLinks.shop.map((link) => (
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group"
                       >
+                        <span className="w-0 h-[2px] bg-primary group-hover:w-3 transition-all" />
                         {link.name}
                       </Link>
                     </li>
@@ -152,9 +152,9 @@ export function Footer() {
           <div>
             <button
               onClick={() => toggleSection('company')}
-              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
+              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none mb-6"
             >
-              <h3 className="font-semibold mb-4">Entreprise</h3>
+              <h3 className="font-black uppercase italic tracking-tighter text-lg">Entreprise</h3>
               <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'company' ? 'rotate-180' : ''
                 }`} />
             </button>
@@ -162,16 +162,17 @@ export function Footer() {
               {(expandedSection === 'company' || isDesktop) && (
                 <motion.ul
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="space-y-2 md:block"
+                  className="space-y-3"
                 >
                   {footerLinks.company.map((link) => (
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group"
                       >
+                        <span className="w-0 h-[2px] bg-primary group-hover:w-3 transition-all" />
                         {link.name}
                       </Link>
                     </li>
@@ -185,9 +186,9 @@ export function Footer() {
           <div>
             <button
               onClick={() => toggleSection('support')}
-              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
+              className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none mb-6"
             >
-              <h3 className="font-semibold mb-4">Support</h3>
+              <h3 className="font-black uppercase italic tracking-tighter text-lg">Support</h3>
               <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'support' ? 'rotate-180' : ''
                 }`} />
             </button>
@@ -195,16 +196,17 @@ export function Footer() {
               {(expandedSection === 'support' || isDesktop) && (
                 <motion.ul
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="space-y-2 md:block"
+                  className="space-y-3"
                 >
                   {footerLinks.support.map((link) => (
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group"
                       >
+                        <span className="w-0 h-[2px] bg-primary group-hover:w-3 transition-all" />
                         {link.name}
                       </Link>
                     </li>
@@ -215,39 +217,35 @@ export function Footer() {
           </div>
 
           {/* Newsletter */}
-          <div>
-            <h3 className="font-semibold mb-4">Newsletter</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Abonnez-vous pour recevoir des offres spéciales et des mises à jour.
+          <div className="lg:col-span-1">
+            <h3 className="font-black uppercase italic tracking-tighter text-lg mb-6">Newsletter</h3>
+            <p className="text-sm text-muted-foreground mb-6 font-medium">
+              Abonnez-vous pour recevoir les prochains <span className="text-primary italic font-bold">drops</span>.
             </p>
-            <form onSubmit={handleSubscribe} className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-4">
               <div className="relative">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Entrez votre email"
-                  className="w-full px-4 py-2 pr-10 text-sm border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Email"
+                  className="w-full px-6 py-4 pr-12 text-sm border-2 border-border rounded-2xl bg-muted/50 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-bold placeholder:opacity-30"
                   required
                   aria-label="Email pour la newsletter"
                 />
-                <Mail className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute right-4 top-4 h-5 w-5 text-muted-foreground" />
               </div>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting || isSubscribed}
-                className="w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-4 text-sm font-black uppercase italic tracking-tighter text-white bg-primary rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full mx-auto"
-                  />
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
                 ) : isSubscribed ? (
-                  "Abonné ! ✓"
+                  "REJOINT ! ✓"
                 ) : (
                   "S'abonner"
                 )}
@@ -257,17 +255,17 @@ export function Footer() {
         </div>
 
         {/* Legal Links */}
-        <div className="border-t pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Drip Shop. Tous droits réservés.
+        <div className="border-t border-border pt-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              © {new Date().getFullYear()} DRIP SHOP TN. CRÉÉ POUR LES VRAIS.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-8">
               {footerLinks.legal.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.name}
                 </Link>

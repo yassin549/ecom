@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export const metadata = {
-  title: "Boutique - ShopHub",
-  description: "Parcourez notre catalogue complet de produits",
+  title: "Boutique - Drip Shop",
+  description: "Parcourez notre catalogue complet de streetwear premium",
 }
 
 export default async function ShopPage({
@@ -21,7 +21,7 @@ export default async function ShopPage({
   const isVercel = process.env.VERCEL === '1'
 
   // Fetch categories with product counts
-  let categories: Array<{ id: string; name: string; slug: string; image: string | null; _count: { products: number } }> = []
+  let categories: any[] = []
   if (isVercel) {
     try {
       const sql = await getSql()
@@ -56,7 +56,6 @@ export default async function ShopPage({
     })
   }
 
-
   // Get current category if specified
   let currentCategoryId: string | undefined
   if (params.category) {
@@ -78,6 +77,7 @@ export default async function ShopPage({
   }
 
   // Fetch initial products
+  let initialProducts: any[] = []
   const where: any = {}
   if (currentCategoryId) {
     where.categoryId = currentCategoryId
@@ -89,42 +89,17 @@ export default async function ShopPage({
     ]
   }
 
-  let initialProducts: Array<{ id: string; name: string; slug: string; price: number; image: string; rating: number; reviewCount: number; stock: number }> = []
   if (isVercel) {
     try {
       const sql = await getSql()
-      const clauses: any[] = []
-      if (currentCategoryId) {
-        clauses.push(sql`p."categoryId" = ${currentCategoryId}`)
-      }
-      if (params.search) {
-        const q = `%${params.search}%`
-        clauses.push(sql`(p.name ILIKE ${q} OR p.description ILIKE ${q})`)
-      }
-      const whereSql = clauses.length ? sql`WHERE ${sql.join(clauses, sql` AND `)}` : sql``
       const { rows } = await sql`
-        SELECT p.id, p.name, p.slug, p.price, p.image, p.rating, p."reviewCount", p.stock
-        FROM "Product" p
-        ${whereSql}
-        ORDER BY p."createdAt" DESC
+        SELECT * FROM "Product" 
+        WHERE (${currentCategoryId ? ` "categoryId" = ${currentCategoryId} ` : '1=1'})
+        AND (${params.search ? `(name ILIKE ${'%' + params.search + '%'} OR description ILIKE ${'%' + params.search + '%'})` : '1=1'})
         LIMIT 12
       `
       initialProducts = rows
-      if (initialProducts.length === 0) {
-        const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
-        initialProducts = FALLBACK_PRODUCTS as any
-      }
-
-      if (categories.length === 0) {
-        const { FALLBACK_CATEGORIES } = await import('@/lib/db/fallbacks')
-        categories = FALLBACK_CATEGORIES.map(c => ({
-          ...c,
-          image: c.image || null,
-          _count: { products: (c as any).products || 0 }
-        }))
-      }
-    } catch (error) {
-      console.error("Error fetching products on Vercel:", error)
+    } catch {
       initialProducts = []
     }
   } else {
@@ -132,36 +107,51 @@ export default async function ShopPage({
       where,
       take: 12,
       orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        price: true,
-        image: true,
-        rating: true,
-        reviewCount: true,
-        stock: true,
-      },
     })
+  }
+
+  // Unified Fallback Logic
+  if (initialProducts.length === 0) {
+    try {
+      const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
+      initialProducts = FALLBACK_PRODUCTS as any
+    } catch {
+      initialProducts = []
+    }
+  }
+
+  if (categories.length === 0) {
+    try {
+      const { FALLBACK_CATEGORIES } = await import('@/lib/db/fallbacks')
+      categories = FALLBACK_CATEGORIES.map(c => ({
+        ...c,
+        image: c.image || null,
+        _count: { products: (c as any).products || 0 }
+      }))
+    } catch {
+      categories = []
+    }
   }
 
   const categoriesWithCount = categories.map((cat) => ({
     ...cat,
-    productCount: cat._count.products,
+    productCount: cat._count?.products ?? (cat as any).products ?? 0,
   }))
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          {params.search
-            ? `Résultats de recherche pour "${params.search}"`
-            : params.category
-              ? categoriesWithCount.find((c) => c.slug === params.category)?.name || "Boutique"
-              : "Tous les Produits"}
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div className="mb-12">
+        <h1 className="text-5xl md:text-7xl font-black mb-4 uppercase italic tracking-tighter text-foreground drop-shadow-sm">
+          {params.search ? (
+            <>Recherche: <span className="text-primary">"{params.search}"</span></>
+          ) : params.category ? (
+            categoriesWithCount.find((c) => c.slug === params.category)?.name || "Boutique"
+          ) : (
+            <>Le <span className="text-primary italic">Drip</span> Shop</>
+          )}
         </h1>
-        <p className="text-muted-foreground">
-          Découvrez des produits incroyables à des prix imbattables
+        <p className="text-muted-foreground text-lg font-medium max-w-2xl border-l-4 border-primary pl-6 py-2">
+          Découvrez notre collection exclusive de streetwear premium. Pièces limitées, style illimité.
         </p>
       </div>
 

@@ -142,89 +142,93 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-background py-16 sm:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg p-8 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center">
-              <User className="h-10 w-10 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-card rounded-[2rem] border-2 border-border p-8 sm:p-12 mb-8 relative overflow-hidden group shadow-2xl"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative flex flex-col sm:flex-row items-center gap-6 sm:gap-8 text-center sm:text-left">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary to-purple-600 rounded-3xl flex items-center justify-center shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform">
+              <User className="h-12 w-12 sm:h-16 sm:w-16 text-white" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Mon Profil</h1>
-              <p className="text-gray-600 mt-1">demo@example.com</p>
+            <div className="flex-1">
+              <h1 className="text-4xl sm:text-5xl font-black text-foreground uppercase italic tracking-tighter mb-2">Mon <span className="text-primary italic">Profil</span></h1>
+              <p className="text-muted-foreground text-lg font-medium">demo@example.com</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg overflow-hidden">
-          <div className="flex border-b border-gray-200 overflow-x-auto">
+        <div className="bg-card rounded-[2rem] border-border border-2 overflow-hidden shadow-2xl">
+          <div className="flex border-b border-border p-2 gap-2 bg-muted/50 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab("orders")}
-              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
-                activeTab === "orders"
-                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`flex-1 py-4 px-6 rounded-2xl font-black uppercase italic tracking-tighter transition-all whitespace-nowrap ${activeTab === "orders"
+                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
             >
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-3">
                 <Package className="h-5 w-5" />
-                <span className="hidden sm:inline">Mes Commandes</span>
-                <span className="sm:hidden">Commandes</span>
+                <span>Commandes</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab("commands")}
-              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
-                activeTab === "commands"
-                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`flex-1 py-4 px-6 rounded-2xl font-black uppercase italic tracking-tighter transition-all whitespace-nowrap ${activeTab === "commands"
+                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
             >
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-3">
                 <Terminal className="h-5 w-5" />
-                <span className="hidden sm:inline">Actions</span>
-                <span className="sm:hidden">Actions</span>
+                <span>Actions</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab("info")}
-              className={`flex-1 py-4 px-4 sm:px-6 font-semibold transition-colors whitespace-nowrap ${
-                activeTab === "info"
-                  ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`flex-1 py-4 px-6 rounded-2xl font-black uppercase italic tracking-tighter transition-all whitespace-nowrap ${activeTab === "info"
+                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
             >
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-3">
                 <User className="h-5 w-5" />
-                <span className="hidden sm:inline">Informations</span>
-                <span className="sm:hidden">Info</span>
+                <span>Info</span>
               </div>
             </button>
           </div>
 
-          <div className="p-6">
+          <div className="p-8">
             {activeTab === "orders" ? (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Historique des Commandes
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter mb-8 flex items-center gap-4">
+                  <Package className="h-8 w-8 text-primary" />
+                  Historique <span className="text-primary italic">Commandes</span>
                 </h2>
 
                 {isLoading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-600">Chargement...</p>
+                  <div className="text-center py-20">
+                    <div className="animate-spin w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-6 shadow-[0_0_20px_rgba(147,51,234,0.3)]" />
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest">DRIPPING...</p>
                   </div>
                 ) : orders.length === 0 ? (
-                  <div className="text-center py-12">
-                    <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Aucune commande pour le moment</p>
+                  <div className="text-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed border-border">
+                    <ShoppingBag className="h-20 w-20 text-muted mx-auto mb-6" />
+                    <p className="text-foreground font-black text-2xl uppercase italic tracking-tighter">Pas encore de drip ici</p>
+                    <Link href="/shop" className="inline-block mt-6 px-8 py-4 bg-primary text-white rounded-2xl font-black uppercase italic tracking-tighter hover:scale-105 transition-transform">Explorer la boutique</Link>
                   </div>
                 ) : (
                   <div
                     ref={parentRef}
-                    className="h-[600px] overflow-auto"
+                    className="h-[600px] overflow-auto pr-4 custom-scrollbar"
                     style={{ contain: "strict" }}
                   >
                     <div
@@ -243,14 +247,13 @@ export default function ProfilePage() {
                             animate={{ opacity: 1 }}
                             style={{
                               position: "absolute",
-                              top: 0,
+                              top: virtualRow.start,
                               left: 0,
                               width: "100%",
-                              height: `${virtualRow.size}px`,
-                              transform: `translateY(${virtualRow.start}px)`,
+                              height: virtualRow.size,
                             }}
                           >
-                            <div className="p-4 bg-gray-50 rounded-xl mb-4">
+                            <div className="p-6 bg-muted/40 rounded-[2rem] border-2 border-border mb-6 group hover:border-primary/50 transition-all hover:shadow-xl">
                               <div className="flex items-start justify-between mb-4">
                                 <div>
                                   <div className="font-bold text-gray-900 mb-1">
@@ -262,9 +265,8 @@ export default function ProfilePage() {
                                       {new Date(order.date).toLocaleDateString("fr-FR")}
                                     </span>
                                     <span
-                                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                        statusColors[order.status as keyof typeof statusColors]
-                                      }`}
+                                      className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status as keyof typeof statusColors]
+                                        }`}
                                     >
                                       {statusLabels[order.status as keyof typeof statusLabels]}
                                     </span>
@@ -310,41 +312,39 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-            ) : activeTab === "commands" ? (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Mes Actions
+            {activeTab === "commands" ? (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter mb-8 flex items-center gap-4">
+                  <Terminal className="h-8 w-8 text-primary" />
+                  Mes <span className="text-primary italic">Actions</span>
                 </h2>
 
                 {commandsLoading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-600">Chargement...</p>
+                  <div className="text-center py-20">
+                    <div className="animate-spin w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-6 shadow-[0_0_20px_rgba(147,51,234,0.3)]" />
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest">LOADING ACTIONS...</p>
                   </div>
                 ) : commands.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Terminal className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Aucune action pour le moment</p>
+                  <div className="text-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed border-border">
+                    <Terminal className="h-20 w-20 text-muted mx-auto mb-6" />
+                    <p className="text-foreground font-black text-2xl uppercase italic tracking-tighter">Aucune action disponible</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {commands.map((command) => {
                       const statusIcon = {
-                        pending: <Clock className="h-5 w-5 text-yellow-600" />,
-                        completed: <CheckCircle className="h-5 w-5 text-green-600" />,
-                        cancelled: <XCircle className="h-5 w-5 text-red-600" />,
+                        pending: <Clock className="h-6 w-6 text-yellow-500" />,
+                        completed: <CheckCircle className="h-6 w-6 text-green-500" />,
+                        cancelled: <XCircle className="h-6 w-6 text-red-500" />,
                       }[command.status]
 
                       const statusColor = {
-                        pending: "bg-yellow-100 text-yellow-700",
-                        completed: "bg-green-100 text-green-700",
-                        cancelled: "bg-red-100 text-red-700",
-                      }[command.status]
-
-                      const statusLabel = {
-                        pending: "En attente",
-                        completed: "Terminé",
-                        cancelled: "Annulé",
+                        pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+                        completed: "bg-green-500/10 text-green-500 border-green-500/20",
+                        cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
                       }[command.status]
 
                       return (
@@ -352,41 +352,39 @@ export default function ProfilePage() {
                           key={command.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="p-4 bg-gray-50 rounded-xl border border-gray-200"
+                          className="p-8 bg-muted/40 rounded-[2rem] border-2 border-border group hover:border-primary/50 transition-all"
                         >
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-6">
                             <div className="flex-1">
-                              <h3 className="font-bold text-gray-900 mb-1">{command.name}</h3>
+                              <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter mb-2 group-hover:text-primary transition-colors">{command.name}</h3>
                               {command.description && (
-                                <p className="text-sm text-gray-600">{command.description}</p>
+                                <p className="text-muted-foreground font-medium mb-4">{command.description}</p>
                               )}
-                              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                                <Calendar className="h-3 w-3" />
+                              <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                <Calendar className="h-4 w-4" />
                                 {new Date(command.createdAt).toLocaleDateString("fr-FR")}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3 px-5 py-2 rounded-full border-2 font-black uppercase italic tracking-tighter text-sm shadow-inner" style={{ backgroundColor: 'rgba(var(--primary), 0.1)' }}>
                               {statusIcon}
-                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColor}`}>
-                                {statusLabel}
-                              </span>
+                              <span className={statusColor.split(' ')[1]}>{command.status}</span>
                             </div>
                           </div>
                           {command.status === "pending" && (
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-4">
                               <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => updateCommandMutation.mutate({ id: command.id, status: "completed" })}
-                                className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                className="flex-1 py-4 bg-green-600 hover:bg-green-700 text-white font-black uppercase italic tracking-tighter rounded-2xl transition-all shadow-lg shadow-green-600/20"
                               >
-                                Marquer comme terminé
+                                Terminer
                               </motion.button>
                               <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => updateCommandMutation.mutate({ id: command.id, status: "cancelled" })}
-                                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-black uppercase italic tracking-tighter rounded-2xl transition-all shadow-lg shadow-red-600/20"
                               >
                                 Annuler
                               </motion.button>
@@ -397,69 +395,76 @@ export default function ProfilePage() {
                     })}
                   </div>
                 )}
-              </div>
+              </motion.div>
             ) : (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Informations Personnelles
-                </h2>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-12"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter flex items-center gap-4">
+                    <User className="h-8 w-8 text-primary" />
+                    Mes <span className="text-primary italic">Données</span>
+                  </h2>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Nom</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Nom Complet</label>
                     <input
                       type="text"
                       defaultValue="Jean Dupont"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                      className="w-full px-6 py-4 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-foreground"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Email</label>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email</label>
                     <input
                       type="email"
                       defaultValue="demo@example.com"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                      className="w-full px-6 py-4 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-foreground"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Téléphone</label>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Téléphone</label>
                     <input
                       type="tel"
                       defaultValue="+216 12 345 678"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                      className="w-full px-6 py-4 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-foreground"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Ville</label>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Ville</label>
                     <input
                       type="text"
                       defaultValue="Tunis"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none"
+                      className="w-full px-6 py-4 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-foreground"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2 flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    Adresse
+                    Adresse de Livraison
                   </label>
                   <textarea
                     rows={3}
                     defaultValue="123 Avenue Habib Bourguiba, Tunis 1000"
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:border-indigo-600 focus:outline-none resize-none"
+                    className="w-full px-6 py-4 bg-muted/30 border-2 border-border rounded-2xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-foreground resize-none"
                   />
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-6 pt-6">
                   <motion.button
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => toast.success('Modifications enregistrées!')}
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
+                    onClick={() => toast.success('Drip mis à jour!')}
+                    className="px-10 py-5 bg-primary text-white font-black uppercase italic tracking-tighter rounded-2xl shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all hover:shadow-primary/50"
                   >
                     Enregistrer les modifications
                   </motion.button>
@@ -467,16 +472,13 @@ export default function ProfilePage() {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => toast('Fonctionnalité à venir', { icon: 'ℹ️' })}
-                    className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
+                    className="px-10 py-5 bg-muted border-2 border-border text-foreground font-black uppercase italic tracking-tighter rounded-2xl transition-all hover:bg-muted/80"
                   >
-                    Annuler
+                    Réinitialiser
                   </motion.button>
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
-        </div>
-      </div>
-    </div>
-  )
+          )
 }

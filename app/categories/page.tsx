@@ -32,18 +32,6 @@ export default async function CategoriesPage() {
 			console.error("Error fetching categories on Vercel:", error)
 			categories = []
 		}
-
-		if (categories.length === 0) {
-			try {
-				const { FALLBACK_CATEGORIES } = await import('@/lib/db/fallbacks')
-				categories = FALLBACK_CATEGORIES.map(c => ({
-					...c,
-					products: (c as any).products || 0
-				}))
-			} catch {
-				categories = []
-			}
-		}
 	} else {
 		try {
 			const dbCategories = await prisma.category.findMany({
@@ -66,22 +54,63 @@ export default async function CategoriesPage() {
 		}
 	}
 
+	if (categories.length === 0) {
+		try {
+			const { FALLBACK_CATEGORIES } = await import('@/lib/db/fallbacks')
+			categories = FALLBACK_CATEGORIES as any
+		} catch {
+			categories = []
+		}
+	}
+
 	return (
-		<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			<h1 className="text-3xl md:text-4xl font-bold mb-6">Catégories</h1>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+		<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+			<div className="mb-12">
+				<h1 className="text-5xl md:text-7xl font-black mb-4 uppercase italic tracking-tighter text-foreground drop-shadow-sm">
+					Nos <span className="text-primary italic">Catégories</span>
+				</h1>
+				<p className="text-muted-foreground text-lg font-medium max-w-2xl border-l-4 border-primary pl-6 py-2">
+					Explorez nos différents styles et trouvez le drip qui vous correspond.
+				</p>
+			</div>
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
 				{categories.map((cat) => (
-					<Link key={cat.id} href={`/shop?category=${cat.slug}`} className="group block border rounded-xl p-5 hover:shadow-md transition">
-						<div className="font-semibold mb-1">{cat.name}</div>
-						<div className="text-sm text-muted-foreground">{cat.products ?? 0} produits</div>
+					<Link
+						key={cat.id}
+						href={`/shop?category=${cat.slug}`}
+						className="group block relative overflow-hidden rounded-3xl border-2 border-border bg-card transition-all hover:border-primary hover:shadow-[0_0_30px_rgba(147,51,234,0.2)]"
+					>
+						<div className="aspect-[4/5] relative overflow-hidden">
+							{cat.image ? (
+								<img
+									src={cat.image}
+									alt={cat.name}
+									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+								/>
+							) : (
+								<div className="w-full h-full bg-muted flex items-center justify-center">
+									<span className="text-4xl font-bold opacity-20">{cat.name.charAt(0)}</span>
+								</div>
+							)}
+							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+							<div className="absolute bottom-6 left-6 right-6">
+								<h2 className="text-2xl font-black text-white uppercase italic leading-none mb-1">
+									{cat.name}
+								</h2>
+								<div className="text-sm font-bold text-primary flex items-center gap-2">
+									<span>{cat.products ?? 0} PRODUITS</span>
+									<span className="w-8 h-[2px] bg-primary group-hover:w-12 transition-all" />
+								</div>
+							</div>
+						</div>
 					</Link>
 				))}
 				{categories.length === 0 && (
-					<div className="text-muted-foreground">Aucune catégorie trouvée.</div>
+					<div className="text-muted-foreground py-20 text-center col-span-full">
+						<p className="text-xl italic">Aucune catégorie trouvée.</p>
+					</div>
 				)}
 			</div>
 		</div>
 	)
-}
-
 

@@ -57,7 +57,7 @@ export function AnimatedBackground() {
 
       draw() {
         if (!ctx) return
-        ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`
+        ctx.fillStyle = `rgba(147, 51, 234, ${this.opacity})` // primary color
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
         ctx.fill()
@@ -66,7 +66,7 @@ export function AnimatedBackground() {
 
     // Create particles
     const particles: Particle[] = []
-    const particleCount = 50
+    const particleCount = 40
 
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle())
@@ -100,19 +100,19 @@ export function AnimatedBackground() {
       {/* Animated gradient orbs with parallax */}
       <motion.div
         style={{ y: y1 }}
-        className="absolute top-20 left-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"
+        className="absolute top-20 left-10 w-96 h-96 bg-primary/10 rounded-full blur-[120px]"
       />
       <motion.div
         style={{ y: y2 }}
-        className="absolute top-40 right-20 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"
+        className="absolute top-40 right-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[100px]"
       />
       <motion.div
         style={{ y: y3 }}
-        className="absolute bottom-20 left-1/4 w-72 h-72 bg-pink-200/20 rounded-full blur-3xl"
+        className="absolute bottom-20 left-1/4 w-72 h-72 bg-indigo-600/10 rounded-full blur-[80px]"
       />
       <motion.div
         style={{ y: y1 }}
-        className="absolute bottom-40 right-1/3 w-64 h-64 bg-indigo-200/20 rounded-full blur-3xl"
+        className="absolute bottom-40 right-1/3 w-64 h-64 bg-primary/5 rounded-full blur-[100px]"
       />
 
       {/* Grid pattern overlay */}
