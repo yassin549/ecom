@@ -8,6 +8,7 @@ import { Package, ShoppingBag, User, MapPin, Calendar, Terminal, CheckCircle, XC
 import { formatPrice } from "@/lib/currency"
 import { useCartStore } from "@/lib/store/cart-store"
 import toast from "react-hot-toast"
+import Link from "next/link"
 
 type Order = {
   id: string
