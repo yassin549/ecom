@@ -56,10 +56,6 @@ export default async function ShopPage({
     })
   }
 
-  const categoriesWithCount = categories.map((cat) => ({
-    ...cat,
-    productCount: cat._count.products,
-  }))
 
   // Get current category if specified
   let currentCategoryId: string | undefined
@@ -127,54 +123,63 @@ export default async function ShopPage({
           _count: { products: (c as any).products || 0 }
         }))
       }
-    } else {
-      initialProducts = await prisma.product.findMany({
-        where,
-        take: 12,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          price: true,
-          image: true,
-          rating: true,
-          reviewCount: true,
-          stock: true,
-        },
-      })
+    } catch (error) {
+      console.error("Error fetching products on Vercel:", error)
+      initialProducts = []
     }
+  } else {
+    initialProducts = await prisma.product.findMany({
+      where,
+      take: 12,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        image: true,
+        rating: true,
+        reviewCount: true,
+        stock: true,
+      },
+    })
+  }
 
-    return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            {params.search
-              ? `Résultats de recherche pour "${params.search}"`
-              : params.category
-                ? categories.find((c) => c.slug === params.category)?.name || "Boutique"
-                : "Tous les Produits"}
-          </h1>
-          <p className="text-muted-foreground">
-            Découvrez des produits incroyables à des prix imbattables
-          </p>
-        </div>
+  const categoriesWithCount = categories.map((cat) => ({
+    ...cat,
+    productCount: cat._count.products,
+  }))
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <CategoriesSidebar
-            categories={categoriesWithCount}
-            currentCategoryId={currentCategoryId}
+  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">
+          {params.search
+            ? `Résultats de recherche pour "${params.search}"`
+            : params.category
+              ? categoriesWithCount.find((c) => c.slug === params.category)?.name || "Boutique"
+              : "Tous les Produits"}
+        </h1>
+        <p className="text-muted-foreground">
+          Découvrez des produits incroyables à des prix imbattables
+        </p>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <CategoriesSidebar
+          categories={categoriesWithCount}
+          currentCategoryId={currentCategoryId}
+        />
+
+        {/* Product Grid */}
+        <div className="flex-1">
+          <ProductGrid
+            initialProducts={initialProducts}
+            categoryId={currentCategoryId}
           />
-
-          {/* Product Grid */}
-          <div className="flex-1">
-            <ProductGrid
-              initialProducts={initialProducts}
-              categoryId={currentCategoryId}
-            />
-          </div>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+}
