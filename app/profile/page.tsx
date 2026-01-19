@@ -311,8 +311,8 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-              </div>
-            {activeTab === "commands" ? (
+              </motion.div>
+            ) : activeTab === "commands" ? (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -339,13 +339,13 @@ export default function ProfilePage() {
                         pending: <Clock className="h-6 w-6 text-yellow-500" />,
                         completed: <CheckCircle className="h-6 w-6 text-green-500" />,
                         cancelled: <XCircle className="h-6 w-6 text-red-500" />,
-                      }[command.status]
+                      }[command.status as keyof typeof statusLabels] || <Clock className="h-6 w-6 text-gray-500" />
 
-                      const statusColor = {
+                      const statusColor = (({
                         pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
                         completed: "bg-green-500/10 text-green-500 border-green-500/20",
                         cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
-                      }[command.status]
+                      } as any)[command.status]) || "bg-gray-500/10 text-gray-500 border-gray-500/20"
 
                       return (
                         <motion.div
@@ -365,9 +365,11 @@ export default function ProfilePage() {
                                 {new Date(command.createdAt).toLocaleDateString("fr-FR")}
                               </div>
                             </div>
-                            <div className="flex items-center gap-3 px-5 py-2 rounded-full border-2 font-black uppercase italic tracking-tighter text-sm shadow-inner" style={{ backgroundColor: 'rgba(var(--primary), 0.1)' }}>
-                              {statusIcon}
-                              <span className={statusColor.split(' ')[1]}>{command.status}</span>
+                            <div className="flex items-center gap-3 px-5 py-2 rounded-full border-2 font-black uppercase italic tracking-tighter text-sm shadow-inner overflow-hidden" style={{ backgroundColor: 'rgba(var(--primary), 0.1)' }}>
+                              <div className="flex items-center gap-2">
+                                {statusIcon}
+                                <span className={statusColor.split(' ')[1]}>{command.status}</span>
+                              </div>
                             </div>
                           </div>
                           {command.status === "pending" && (
@@ -480,5 +482,8 @@ export default function ProfilePage() {
               </motion.div>
             )}
           </div>
-          )
+        </div>
+      </div>
+    </div>
+  )
 }

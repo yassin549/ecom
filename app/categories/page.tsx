@@ -113,4 +113,4 @@ export default async function CategoriesPage() {
 			</div>
 		</div>
 	)
-
+}
