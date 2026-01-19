@@ -32,16 +32,22 @@ export function Header() {
         <nav className="container mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-full shadow-xl" aria-label="Main navigation">
           <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-6">
             {/* Logo */}
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center space-x-2 text-xl sm:text-2xl font-bold text-gray-900"
               aria-label="Home"
             >
-              <motion.span
+              <motion.div
                 whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2"
               >
-                ShopHub
-              </motion.span>
+                <img
+                  src="/assets/logo.jpg"
+                  alt="Drip Shop Logo"
+                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover"
+                />
+                <span className="hidden sm:inline-block">Drip Shop</span>
+              </motion.div>
             </Link>
 
             {/* Desktop Navigation */}
@@ -125,7 +131,7 @@ export function Header() {
               onClick={() => setIsMenuOpen(false)}
               className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
             />
-            
+
             {/* Menu */}
             <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.95 }}

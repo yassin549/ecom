@@ -19,7 +19,7 @@ let dbPromise: Promise<IDBPDatabase<CartDB>> | null = null
 
 const getDB = () => {
   if (!dbPromise) {
-    dbPromise = openDB<CartDB>('shophub-cart', 1, {
+    dbPromise = openDB<CartDB>('dripshop-cart', 1, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('cart')) {
           db.createObjectStore('cart', { keyPath: 'productId' })

@@ -1,6 +1,6 @@
 {
-  "name": "ShopHub - Your Ultimate Shopping Destination",
-  "short_name": "ShopHub",
+  "name": "Drip Shop - Your Ultimate Shopping Destination",
+  "short_name": "Drip Shop",
   "description": "Discover amazing products across electronics, fashion, home decor, and more",
   "start_url": "/",
   "display": "standalone",
@@ -21,6 +21,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["shopping", "lifestyle"],
+  "categories": [
+    "shopping",
+    "lifestyle"
+  ],
   "screenshots": []
 }

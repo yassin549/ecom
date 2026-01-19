@@ -23,10 +23,10 @@ export function Footer() {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 768)
     }
-    
+
     checkDesktop()
     window.addEventListener('resize', checkDesktop)
-    
+
     return () => window.removeEventListener('resize', checkDesktop)
   }, [])
 
@@ -90,7 +90,7 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
               <span className="text-2xl font-bold text-gray-900">
-                ShopHub
+                Drip Shop
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
@@ -122,9 +122,8 @@ export function Footer() {
               className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
             >
               <h3 className="font-semibold mb-4">Boutique</h3>
-              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${
-                expandedSection === 'shop' ? 'rotate-180' : ''
-              }`} />
+              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'shop' ? 'rotate-180' : ''
+                }`} />
             </button>
             <AnimatePresence>
               {(expandedSection === 'shop' || isDesktop) && (
@@ -156,9 +155,8 @@ export function Footer() {
               className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
             >
               <h3 className="font-semibold mb-4">Entreprise</h3>
-              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${
-                expandedSection === 'company' ? 'rotate-180' : ''
-              }`} />
+              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'company' ? 'rotate-180' : ''
+                }`} />
             </button>
             <AnimatePresence>
               {(expandedSection === 'company' || isDesktop) && (
@@ -190,9 +188,8 @@ export function Footer() {
               className="md:cursor-default flex items-center justify-between w-full md:pointer-events-none"
             >
               <h3 className="font-semibold mb-4">Support</h3>
-              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${
-                expandedSection === 'support' ? 'rotate-180' : ''
-              }`} />
+              <ChevronDown className={`h-5 w-5 md:hidden transition-transform ${expandedSection === 'support' ? 'rotate-180' : ''
+                }`} />
             </button>
             <AnimatePresence>
               {(expandedSection === 'support' || isDesktop) && (
@@ -263,7 +260,7 @@ export function Footer() {
         <div className="border-t pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} ShopHub. Tous droits réservés.
+              © {new Date().getFullYear()} Drip Shop. Tous droits réservés.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               {footerLinks.legal.map((link) => (

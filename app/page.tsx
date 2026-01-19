@@ -1,5 +1,6 @@
 import { HeroModern } from "@/components/home/hero-modern"
 import { FeaturedProducts } from "@/components/home/featured-products"
+import { ProductShowcase } from "@/components/home/product-showcase"
 import { getSql } from '@/lib/vercel-db'
 
 export const dynamic = 'force-dynamic'
@@ -45,6 +46,7 @@ export default async function Home() {
   return (
     <>
       <HeroModern />
+      <ProductShowcase />
       <FeaturedProducts products={featuredProducts} />
     </>
   )

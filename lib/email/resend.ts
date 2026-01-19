@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL = 'ShopHub <noreply@shophub.com>'
+const FROM_EMAIL = 'Drip Shop <noreply@shophub.com>'
 
 export async function sendOrderConfirmation(
   to: string,
@@ -35,16 +35,16 @@ export async function sendOrderConfirmation(
             </thead>
             <tbody>
               ${orderData.items
-                .map(
-                  (item) => `
+          .map(
+            (item) => `
                 <tr>
                   <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name}</td>
                   <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
                   <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.price.toFixed(2)} TND</td>
                 </tr>
               `
-                )
-                .join('')}
+          )
+          .join('')}
             </tbody>
             <tfoot>
               <tr>
@@ -55,7 +55,7 @@ export async function sendOrderConfirmation(
           </table>
           
           <p style="margin-top: 20px;">Nous vous tiendrons informé de l'état de votre commande.</p>
-          <p>Merci de faire vos achats chez ShopHub !</p>
+          <p>Merci de faire vos achats chez Drip Shop !</p>
         </div>
       `,
     })
@@ -99,18 +99,16 @@ export async function sendOrderStatusUpdate(
             </p>
           </div>
           
-          ${
-            orderData.status === 'shipped'
-              ? '<p>Votre commande est en route ! Vous devriez la recevoir sous peu.</p>'
-              : ''
-          }
-          ${
-            orderData.status === 'delivered'
-              ? '<p>Votre commande a été livrée ! Nous espérons que vous êtes satisfait de vos achats.</p>'
-              : ''
-          }
+          ${orderData.status === 'shipped'
+          ? '<p>Votre commande est en route ! Vous devriez la recevoir sous peu.</p>'
+          : ''
+        }
+          ${orderData.status === 'delivered'
+          ? '<p>Votre commande a été livrée ! Nous espérons que vous êtes satisfait de vos achats.</p>'
+          : ''
+        }
           
-          <p>Merci de faire vos achats chez ShopHub !</p>
+          <p>Merci de faire vos achats chez Drip Shop !</p>
         </div>
       `,
     })
