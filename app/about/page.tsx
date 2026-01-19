@@ -56,20 +56,20 @@ export default function AboutPage() {
 						transition={{ duration: 0.6 }}
 						className="text-center max-w-4xl mx-auto"
 					>
-						<h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-							À Propos de <span className="text-indigo-600">ShopHub</span>
+						<h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tighter uppercase italic">
+							À Propos de <span className="text-primary">Drip Shop</span>
 						</h1>
 						<p className="text-xl text-gray-600 mb-8 leading-relaxed">
-							Votre destination shopping ultime en Tunisie. Nous offrons une expérience d'achat en ligne 
+							Votre destination shopping ultime en Tunisie. Nous offrons une expérience d'achat en ligne
 							exceptionnelle avec des produits de qualité, des prix compétitifs et un service client irréprochable.
 						</p>
 						<div className="flex items-center justify-center gap-4 text-sm text-gray-500">
 							<div className="flex items-center gap-2">
-								<Globe className="h-5 w-5 text-indigo-600" />
+								<Globe className="h-5 w-5 text-primary" />
 								<span>Fondé en 2024</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<Users className="h-5 w-5 text-indigo-600" />
+								<Users className="h-5 w-5 text-primary" />
 								<span>50,000+ Clients</span>
 							</div>
 						</div>
@@ -89,7 +89,7 @@ export default function AboutPage() {
 								transition={{ duration: 0.6, delay: index * 0.1 }}
 								className="text-center"
 							>
-								<div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">
+								<div className="text-4xl md:text-5xl font-black text-primary mb-2 italic">
 									{stat.value}
 								</div>
 								<div className="text-gray-600 font-medium">{stat.label}</div>
@@ -108,8 +108,8 @@ export default function AboutPage() {
 						transition={{ duration: 0.6 }}
 						className="text-center mb-16"
 					>
-						<h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-							Pourquoi Choisir ShopHub ?
+						<h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 uppercase tracking-tighter">
+							Pourquoi Choisir Drip Shop ?
 						</h2>
 						<p className="text-gray-600 max-w-2xl mx-auto">
 							Nous nous engageons à offrir la meilleure expérience d'achat en ligne
@@ -128,8 +128,8 @@ export default function AboutPage() {
 									whileHover={{ y: -5 }}
 									className="bg-white p-8 rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all"
 								>
-									<div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
-										<Icon className="h-7 w-7 text-indigo-600" />
+									<div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+										<Icon className="h-7 w-7 text-primary" />
 									</div>
 									<h3 className="text-xl font-bold text-gray-900 mb-2">
 										{feature.title}
@@ -157,8 +157,8 @@ export default function AboutPage() {
 							Notre Mission
 						</h2>
 						<p className="text-xl text-indigo-100 leading-relaxed">
-							Rendre le shopping en ligne accessible, pratique et agréable pour tous les Tunisiens. 
-							Nous croyons que chacun mérite d'avoir accès à des produits de qualité à des prix justes, 
+							Rendre le shopping en ligne accessible, pratique et agréable pour tous les Tunisiens.
+							Nous croyons que chacun mérite d'avoir accès à des produits de qualité à des prix justes,
 							avec un service client exceptionnel.
 						</p>
 					</motion.div>
@@ -184,7 +184,7 @@ export default function AboutPage() {
 							href="/shop"
 							whileHover={{ scale: 1.05, y: -2 }}
 							whileTap={{ scale: 0.95 }}
-							className="inline-block px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
+							className="inline-block px-8 py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg transition-all uppercase tracking-wider"
 						>
 							Explorer la Boutique
 						</motion.a>

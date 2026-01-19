@@ -3,16 +3,15 @@
 // Exchange rate: 1 USD = 3.1 TND (approximate)
 const USD_TO_TND_RATE = 3.1
 
-export function formatPrice(priceInUSD: number): string {
-  const priceInTND = priceInUSD * USD_TO_TND_RATE
+export function formatPrice(priceInTND: number): string {
   return new Intl.NumberFormat('fr-TN', {
     style: 'currency',
     currency: 'TND',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
   }).format(priceInTND)
 }
 
 export function convertUSDtoTND(priceInUSD: number): number {
-  return priceInUSD * USD_TO_TND_RATE
+  return priceInUSD // We'll treat prices as TND directly now
 }

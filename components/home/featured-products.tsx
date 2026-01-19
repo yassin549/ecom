@@ -51,11 +51,11 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Produits en Vedette
+          <h2 className="text-3xl md:text-5xl font-black mb-4 uppercase italic">
+            Le Meilleur du <span className="text-primary drip-text">Drip</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Découvrez notre sélection de produits premium
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
+            Notre sélection exclusive de pièces streetwear premium.
           </p>
         </motion.div>
 
@@ -82,7 +82,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-colors shadow-lg"
+              className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-bold hover:bg-primary/90 transition-all shadow-xl streetwear-button uppercase tracking-wider"
             >
               Voir Tous les Produits
             </motion.button>

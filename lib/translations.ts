@@ -8,12 +8,12 @@ export const translations = {
   cart: "Panier",
 
   // Hero Section
-  heroTitle: "Découvrez des Produits Incroyables",
-  heroSubtitle: "Achetez les dernières tendances en électronique, mode, décoration et plus encore. Produits de qualité à des prix imbattables.",
-  searchPlaceholder: "Rechercher des produits...",
+  heroTitle: "Boutique de Vêtements - Drip Shop",
+  heroSubtitle: "Le meilleur du streetwear tunisien. Livraison dans toute la Tunisie 🇹🇳. DM pour commander sur nos réseaux.",
+  searchPlaceholder: "Trouve ton drip...",
   searchButton: "Rechercher",
-  shopNow: "Acheter Maintenant",
-  browseCategories: "Parcourir les Catégories",
+  shopNow: "Voir la Collection",
+  browseCategories: "Toutes les Catégories",
 
   // Stats
   products: "Produits",
@@ -37,7 +37,7 @@ export const translations = {
   productsCount: "{count} produits",
 
   // Footer
-  footerTagline: "Votre destination unique pour des produits de qualité à des prix incroyables.",
+  footerTagline: "Le shop numéro 1 pour le streetwear premium en Tunisie. Qualité, style et livraison rapide.",
   newsletter: "Newsletter",
   newsletterText: "Abonnez-vous pour recevoir des offres spéciales et des mises à jour.",
   emailPlaceholder: "Entrez votre email",

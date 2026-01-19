@@ -32,27 +32,33 @@ export function PageLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black"
         >
           {/* Logo */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{
+              duration: 0.8,
+              type: "spring",
+              stiffness: 200
+            }}
             className="mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-              ShopHub
-            </h1>
+            <img
+              src="/assets/logo.jpg"
+              alt="Drip Shop Logo"
+              className="h-24 w-24 md:h-32 md:w-32 rounded-full object-cover shadow-2xl border-4 border-primary/20"
+            />
           </motion.div>
 
           {/* Progress Bar Container */}
           <div className="w-64 md:w-80 relative">
             {/* Background Track */}
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
               {/* Animated Progress */}
               <motion.div
-                className="h-full bg-indigo-600 rounded-full"
+                className="h-full bg-gradient-to-r from-primary via-purple-500 to-indigo-500 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
@@ -66,7 +72,7 @@ export function PageLoader() {
               transition={{ delay: 0.2 }}
               className="mt-4 text-center"
             >
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-bold text-white tracking-widest">
                 {progress}%
               </span>
             </motion.div>
@@ -79,7 +85,7 @@ export function PageLoader() {
             transition={{ delay: 0.3 }}
             className="mt-6 text-sm text-gray-500"
           >
-            Chargement de votre expérience shopping...
+            Préparation du Drip...
           </motion.p>
         </motion.div>
       )}

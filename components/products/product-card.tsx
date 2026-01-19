@@ -33,11 +33,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     if (isAdding) return
-    
+
     setIsAdding(true)
-    
+
     // Add to cart
     addItem({
       id: product.id,
@@ -92,7 +92,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
       className="group relative"
     >
       <Link href={`/product/${product.slug}`}>
-        <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border relative">
+        <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border relative streetwear-card">
           {/* Wishlist Button */}
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -102,9 +102,8 @@ export function ProductCard({ product, index }: ProductCardProps) {
             aria-label="Add to wishlist"
           >
             <Heart
-              className={`h-5 w-5 ${
-                isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"
-              } transition-colors`}
+              className={`h-5 w-5 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"
+                } transition-colors`}
             />
           </motion.button>
 
@@ -174,11 +173,10 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 whileTap={{ scale: 0.9 }}
                 onClick={handleAddToCart}
                 disabled={product.stock === 0 || isAdding}
-                className={`p-3 rounded-full transition-all ${
-                  product.stock === 0
+                className={`p-3 rounded-full transition-all streetwear-button ${product.stock === 0
                     ? "bg-muted text-muted-foreground cursor-not-allowed"
                     : "bg-primary text-primary-foreground hover:shadow-lg opacity-0 group-hover:opacity-100"
-                } ${isAdding ? "animate-pulse" : ""}`}
+                  } ${isAdding ? "animate-pulse" : ""}`}
                 aria-label={`Ajouter ${product.name} au panier`}
               >
                 <ShoppingCart className="h-5 w-5" />

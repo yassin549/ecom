@@ -47,24 +47,26 @@ export function HeroModern() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-center mb-6 sm:mb-8"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight tracking-tight px-2">
-              Votre Boutique
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 leading-none tracking-tighter px-2 uppercase italic">
+              Boutique de
               <br />
-              <span className="text-indigo-600">Premium</span> en Ligne
+              <span className="text-primary drop-shadow-[0_0_15px_rgba(147,51,234,0.3)] drip-text">Vêtements</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-              Découvrez une sélection raffinée de produits exceptionnels.
-              <br className="hidden sm:block" />
-              Qualité garantie, satisfaction assurée.
-            </p>
+            <div className="bg-black text-white py-4 px-6 rounded-2xl md:rounded-3xl shadow-2xl transform -rotate-1 mb-8 max-w-2xl mx-auto border-2 border-primary/30">
+              <p className="text-sm sm:text-base md:text-xl font-bold leading-relaxed tracking-wide">
+                <span className="block mb-2">𝐓𝐈𝐊𝐓𝐎𝐊 : 𝐝𝐫𝐢𝐩.𝐬𝐡𝐨𝐩.𝐭𝐧</span>
+                <span className="block mb-2">𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 : 𝐃𝐫𝐢𝐩 𝐒𝐡𝐨𝐩 𝐓𝐧</span>
+                <span className="text-primary italic">Livraison dans toute la Tunisie 🇹🇳 | MP pour commander</span>
+              </p>
+            </div>
           </motion.div>
 
           {/* Search Bar */}
           <motion.form
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-              duration: 0.6, 
+            transition={{
+              duration: 0.6,
               delay: 0.2,
               type: "spring",
               stiffness: 100
@@ -72,13 +74,13 @@ export function HeroModern() {
             onSubmit={handleSearch}
             className="max-w-3xl mx-auto mb-8 sm:mb-10"
           >
-            <motion.div 
+            <motion.div
               className="relative group"
               whileHover={{ scale: 1.03, y: -4 }}
               transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
             >
               {/* Animated Glow effect */}
-              <motion.div 
+              <motion.div
                 className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-30 blur-lg"
                 animate={{
                   opacity: [0, 0.3, 0],
@@ -89,8 +91,8 @@ export function HeroModern() {
                   repeatType: "reverse"
                 }}
               />
-              
-              <motion.div 
+
+              <motion.div
                 className="relative flex items-center bg-white/95 backdrop-blur-md border-2 border-gray-200 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
                 animate={{
                   borderColor: ["#e5e7eb", "#a5b4fc", "#e5e7eb"],
@@ -113,12 +115,12 @@ export function HeroModern() {
                     ease: "linear"
                   }}
                 />
-                
-                <motion.div 
+
+                <motion.div
                   className="relative pl-3 sm:pl-6 pr-2 sm:pr-4 z-10"
-                  animate={{ 
+                  animate={{
                     scale: searchQuery ? [1, 1.2, 1] : 1,
-                    rotate: searchQuery ? [0, -15, 15, -15, 0] : 0 
+                    rotate: searchQuery ? [0, -15, 15, -15, 0] : 0
                   }}
                   transition={{ duration: 0.6 }}
                 >
@@ -135,16 +137,16 @@ export function HeroModern() {
                     <Search className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 drop-shadow-lg" />
                   </motion.div>
                 </motion.div>
-                
+
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher des produits..."
-                  className="relative flex-1 py-3 sm:py-5 text-sm sm:text-lg bg-transparent focus:outline-none text-gray-900 placeholder:text-gray-400 z-10"
+                  placeholder="Trouve ton drip..."
+                  className="relative flex-1 py-3 sm:py-5 text-sm sm:text-lg bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder:text-gray-400 z-10"
                   aria-label="Rechercher des produits"
                 />
-                
+
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                   whileTap={{ scale: 0.9 }}
@@ -174,18 +176,18 @@ export function HeroModern() {
                       ease: "linear"
                     }}
                   />
-                  
+
                   <span className="relative hidden sm:inline">Rechercher</span>
                   <span className="relative sm:hidden">OK</span>
-                  
+
                   <motion.div
                     className="relative"
-                    animate={{ 
+                    animate={{
                       x: [0, 5, 0],
                       scale: [1, 1.2, 1]
                     }}
-                    transition={{ 
-                      repeat: Infinity, 
+                    transition={{
+                      repeat: Infinity,
                       duration: 1,
                       ease: "easeInOut"
                     }}
@@ -235,26 +237,26 @@ export function HeroModern() {
             className="grid grid-cols-3 gap-3 sm:gap-6 md:gap-8 max-w-3xl mx-auto"
           >
             {[
-              { label: "Produits", value: "10K+", icon: ShoppingBag, color: "text-indigo-600" },
-              { label: "Clients", shortLabel: "Clients", value: "50K+", icon: TrendingUp, color: "text-purple-600" },
-              { label: "Note", value: "4.8★", icon: Award, color: "text-pink-600" },
+              { label: "Modèles", value: "200+", icon: ShoppingBag, color: "text-indigo-600" },
+              { label: "Drippers", shortLabel: "Clients", value: "10K+", icon: TrendingUp, color: "text-purple-600" },
+              { label: "Avis", value: "4.9★", icon: Award, color: "text-pink-600" },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="text-center p-3 sm:p-4 md:p-6 bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200 hover:border-gray-300 transition-all hover:shadow-lg"
+                className="text-center p-3 sm:p-4 md:p-6 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all hover:shadow-lg"
               >
                 <div className="flex justify-center mb-2 sm:mb-3">
-                  <div className="p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl">
+                  <div className="p-2 sm:p-3 bg-gray-50 dark:bg-white/5 rounded-lg sm:rounded-xl">
                     <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ${stat.color}`} />
                   </div>
                 </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-gray-600">{stat.label}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
