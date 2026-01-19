@@ -336,11 +336,11 @@ export default function ProfilePage() {
                 ) : (
                   <div className="space-y-6">
                     {commands.map((command) => {
-                      const statusIcon = {
+                      const statusIcon = (({
                         pending: <Clock className="h-6 w-6 text-yellow-500" />,
                         completed: <CheckCircle className="h-6 w-6 text-green-500" />,
                         cancelled: <XCircle className="h-6 w-6 text-red-500" />,
-                      }[command.status as keyof typeof statusLabels] || <Clock className="h-6 w-6 text-gray-500" />
+                      } as any)[command.status]) || <Clock className="h-6 w-6 text-gray-500" />
 
                       const statusColor = (({
                         pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
