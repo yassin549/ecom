@@ -31,9 +31,9 @@ export function HeroModern() {
             transition={{ duration: 0.5 }}
             className="flex justify-center mb-6 sm:mb-8"
           >
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-semibold text-gray-900 whitespace-nowrap">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-background/80 backdrop-blur-sm border border-border rounded-full shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-semibold text-foreground whitespace-nowrap">
                 <span className="hidden sm:inline">Qualité Premium · Livraison Rapide · Prix Justes</span>
                 <span className="sm:hidden">Premium · Rapide · Juste</span>
               </span>
@@ -47,18 +47,11 @@ export function HeroModern() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-center mb-6 sm:mb-8"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 leading-none tracking-tighter px-2 uppercase italic">
-              Boutique de
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-foreground mb-4 sm:mb-6 leading-none tracking-tighter px-2 uppercase italic">
+              Boutique
               <br />
-              <span className="text-primary drop-shadow-[0_0_15px_rgba(147,51,234,0.3)] drip-text">Vêtements</span>
+              <span className="text-primary drop-shadow-[0_0_15px_rgba(147,51,234,0.3)] drip-text">Drip Shop</span>
             </h1>
-            <div className="bg-black text-white py-4 px-6 rounded-2xl md:rounded-3xl shadow-2xl transform -rotate-1 mb-8 max-w-2xl mx-auto border-2 border-primary/30">
-              <p className="text-sm sm:text-base md:text-xl font-bold leading-relaxed tracking-wide">
-                <span className="block mb-2">𝐓𝐈𝐊𝐓𝐎𝐊 : 𝐝𝐫𝐢𝐩.𝐬𝐡𝐨𝐩.𝐭𝐧</span>
-                <span className="block mb-2">𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 : 𝐃𝐫𝐢𝐩 𝐒𝐡𝐨𝐩 𝐓𝐧</span>
-                <span className="text-primary italic">Livraison dans toute la Tunisie 🇹🇳 | MP pour commander</span>
-              </p>
-            </div>
           </motion.div>
 
           {/* Search Bar */}
@@ -222,7 +215,7 @@ export function HeroModern() {
               <motion.button
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto px-8 sm:px-10 py-3.5 sm:py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-indigo-600 text-gray-900 hover:text-indigo-600 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl text-sm sm:text-base"
+                className="w-full sm:w-auto px-8 sm:px-10 py-3.5 sm:py-4 bg-background/80 backdrop-blur-sm border-2 border-border hover:border-primary text-foreground hover:text-primary rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl text-sm sm:text-base"
               >
                 Voir les Catégories
               </motion.button>

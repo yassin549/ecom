@@ -14,7 +14,7 @@ const showcaseImages = [
 
 export function ProductShowcase() {
     return (
-        <section className="py-20 bg-white overflow-hidden">
+        <section className="py-20 bg-background overflow-hidden">
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -26,10 +26,10 @@ export function ProductShowcase() {
                         <Sparkles className="h-4 w-4" />
                         <span className="text-sm font-bold uppercase tracking-wider">Notre Collection Exclusive</span>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tighter">
+                    <h2 className="text-4xl md:text-5xl font-black text-foreground mb-4 tracking-tighter">
                         LE <span className="text-primary">DRIP</span> ULTIME
                     </h2>
-                    <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+                    <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         Explorez notre nouvelle gamme de produits sélectionnés avec soin pour votre style unique.
                     </p>
                 </motion.div>
@@ -51,7 +51,7 @@ export function ProductShowcase() {
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300" />
                             <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span className="px-4 py-2 bg-white/90 backdrop-blur text-gray-900 font-bold rounded-full text-sm shadow-xl">
+                                <span className="px-4 py-2 bg-background/90 backdrop-blur text-foreground font-bold rounded-full text-sm shadow-xl">
                                     Voir Plus
                                 </span>
                             </div>

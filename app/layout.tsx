@@ -55,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/assets/logo.jpg" />
         <meta name="theme-color" content="#000000" />
       </head>
       <body

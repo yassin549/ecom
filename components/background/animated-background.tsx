@@ -93,7 +93,7 @@ export function AnimatedBackground() {
   }, [])
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="fixed inset-0 -z-10 overflow-hidden bg-background">
       {/* Canvas for particles */}
       <canvas ref={canvasRef} className="absolute inset-0" />
 

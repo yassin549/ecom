@@ -114,57 +114,67 @@ export default async function ShopPage({
         LIMIT 12
       `
       initialProducts = rows
-    } catch {
-      initialProducts = []
+      if (initialProducts.length === 0) {
+        const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
+        initialProducts = FALLBACK_PRODUCTS as any
+      }
+
+      if (categories.length === 0) {
+        const { FALLBACK_CATEGORIES } = await import('@/lib/db/fallbacks')
+        categories = FALLBACK_CATEGORIES.map(c => ({
+          ...c,
+          image: c.image || null,
+          _count: { products: (c as any).products || 0 }
+        }))
+      }
+    } else {
+      initialProducts = await prisma.product.findMany({
+        where,
+        take: 12,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          price: true,
+          image: true,
+          rating: true,
+          reviewCount: true,
+          stock: true,
+        },
+      })
     }
-  } else {
-    initialProducts = await prisma.product.findMany({
-      where,
-      take: 12,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        price: true,
-        image: true,
-        rating: true,
-        reviewCount: true,
-        stock: true,
-      },
-    })
-  }
 
-  return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          {params.search
-            ? `Résultats de recherche pour "${params.search}"`
-            : params.category
-            ? categories.find((c) => c.slug === params.category)?.name || "Boutique"
-            : "Tous les Produits"}
-        </h1>
-        <p className="text-muted-foreground">
-          Découvrez des produits incroyables à des prix imbattables
-        </p>
-      </div>
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            {params.search
+              ? `Résultats de recherche pour "${params.search}"`
+              : params.category
+                ? categories.find((c) => c.slug === params.category)?.name || "Boutique"
+                : "Tous les Produits"}
+          </h1>
+          <p className="text-muted-foreground">
+            Découvrez des produits incroyables à des prix imbattables
+          </p>
+        </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <CategoriesSidebar
-          categories={categoriesWithCount}
-          currentCategoryId={currentCategoryId}
-        />
-
-        {/* Product Grid */}
-        <div className="flex-1">
-          <ProductGrid
-            initialProducts={initialProducts}
-            categoryId={currentCategoryId}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar */}
+          <CategoriesSidebar
+            categories={categoriesWithCount}
+            currentCategoryId={currentCategoryId}
           />
+
+          {/* Product Grid */}
+          <div className="flex-1">
+            <ProductGrid
+              initialProducts={initialProducts}
+              categoryId={currentCategoryId}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }

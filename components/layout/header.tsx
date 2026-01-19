@@ -29,7 +29,7 @@ export function Header() {
   return (
     <>
       <header className="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
-        <nav className="container mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-full shadow-xl" aria-label="Main navigation">
+        <nav className="container mx-auto bg-background/80 backdrop-blur-md border border-border rounded-full shadow-xl" aria-label="Main navigation">
           <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-6">
             {/* Logo */}
             <Link
