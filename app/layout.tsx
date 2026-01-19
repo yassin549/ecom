@@ -20,19 +20,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShopHub - Votre Destination Shopping Ultime",
+  title: "Drip Shop - Votre Destination Shopping Ultime",
   description: "Découvrez des produits incroyables en électronique, mode, décoration et plus encore. Produits de qualité à des prix imbattables avec livraison rapide.",
   keywords: ["ecommerce", "shopping", "boutique en ligne", "électronique", "mode", "décoration", "tunisie"],
-  authors: [{ name: "ShopHub" }],
+  authors: [{ name: "Drip Shop" }],
   openGraph: {
-    title: "ShopHub - Votre Destination Shopping Ultime",
+    title: "Drip Shop - Votre Destination Shopping Ultime",
     description: "Découvrez des produits incroyables en électronique, mode, décoration et plus encore.",
     type: "website",
     locale: "fr_TN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ShopHub - Votre Destination Shopping Ultime",
+    title: "Drip Shop - Votre Destination Shopping Ultime",
     description: "Découvrez des produits incroyables en électronique, mode, décoration et plus encore.",
   },
   robots: {
@@ -64,7 +64,7 @@ export default function RootLayout({
         <PageLoader />
         <AnimatedBackground />
         <QueryProvider>
-          <ThemeProvider defaultTheme="light" storageKey="shophub-theme">
+          <ThemeProvider defaultTheme="light" storageKey="dripshop-theme">
             <NProgressProvider>
               <div className="flex min-h-screen flex-col relative">
                 <Header />
