@@ -35,11 +35,11 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-lg mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-xl mb-3 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
             <Lock className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
-          <p className="text-sm text-gray-500 mt-1">Entrez le mot de passe</p>
+          <h1 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900">Drip Shop Admin</h1>
+          <p className="text-sm font-bold text-gray-500 mt-1 uppercase tracking-widest">Accès Sécurisé</p>
         </div>
 
         {/* Login Card */}
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary focus:outline-none transition-all"
                   placeholder="Entrez le mot de passe"
                   required
                   autoFocus
@@ -90,7 +90,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-black italic uppercase tracking-tighter rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(147,51,234,0.3)]"
             >
               {isLoading ? (
                 <>

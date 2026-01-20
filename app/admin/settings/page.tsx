@@ -6,12 +6,12 @@ import { Settings, Bell, Shield, Database, Mail } from "lucide-react"
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
-    siteName: "ShopHub",
-    siteEmail: "admin@shophub.com",
+    siteName: "Drip Shop",
+    siteEmail: "admin@dripshop.tn",
     notifications: true,
     emailNotifications: true,
     maintenanceMode: false,
-    maxOrdersPerDay: 1000,
+    maxOrdersPerDay: 420,
   })
 
   const handleSave = () => {
@@ -32,8 +32,8 @@ export default function AdminSettingsPage() {
         {/* General Settings */}
         <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Settings className="h-6 w-6 text-indigo-600" />
-            <h2 className="text-xl font-bold text-gray-900">Paramètres Généraux</h2>
+            <Settings className="h-6 w-6 text-primary" />
+            <h2 className="text-xl font-black italic uppercase tracking-tighter text-gray-900">Paramètres Généraux</h2>
           </div>
           <div className="space-y-4">
             <div>
@@ -77,8 +77,8 @@ export default function AdminSettingsPage() {
         {/* Notification Settings */}
         <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Bell className="h-6 w-6 text-indigo-600" />
-            <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
+            <Bell className="h-6 w-6 text-primary" />
+            <h2 className="text-xl font-black italic uppercase tracking-tighter text-gray-900">Notifications</h2>
           </div>
           <div className="space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
@@ -113,8 +113,8 @@ export default function AdminSettingsPage() {
         {/* Security Settings */}
         <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Shield className="h-6 w-6 text-indigo-600" />
-            <h2 className="text-xl font-bold text-gray-900">Sécurité</h2>
+            <Shield className="h-6 w-6 text-primary" />
+            <h2 className="text-xl font-black italic uppercase tracking-tighter text-gray-900">Sécurité</h2>
           </div>
           <div className="space-y-4">
             <label className="flex items-center justify-between cursor-pointer">
@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleSave}
-          className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-colors"
+          className="w-full px-6 py-4 bg-primary hover:bg-primary/90 text-white font-black italic uppercase tracking-tighter rounded-xl shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all"
         >
           Enregistrer les Paramètres
         </motion.button>

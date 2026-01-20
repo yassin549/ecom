@@ -18,7 +18,7 @@ type Props = {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  
+
   try {
     const product = await prisma.product.findUnique({
       where: { slug },
@@ -30,25 +30,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     })
 
-    if (!product) {
+    const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
+    const fallbackProduct = FALLBACK_PRODUCTS.find(p => p.slug === slug)
+
+    if (fallbackProduct) {
       return {
-        title: "Produit non trouvé",
+        title: `${fallbackProduct.name} - Drip Shop`,
+        description: fallbackProduct.description || `Achetez ${fallbackProduct.name} sur Drip Shop`,
+        openGraph: {
+          title: fallbackProduct.name,
+          description: fallbackProduct.description || "",
+          images: fallbackProduct.image ? [fallbackProduct.image] : [],
+        },
       }
     }
 
     return {
-      title: `${product.name} - ShopHub`,
-      description: product.description || `Achetez ${product.name} sur ShopHub`,
-      openGraph: {
-        title: product.name,
-        description: product.description || "",
-        images: product.image ? [product.image] : [],
-      },
-    }
-  } catch (error) {
-    console.error('Error generating metadata:', error)
-    return {
-      title: "Produit - ShopHub",
+      title: "Produit - Drip Shop",
       description: "Découvrez nos produits",
     }
   }
@@ -78,20 +76,21 @@ export default async function ProductPage({ params }: Props) {
   }
 
   if (!product) {
+    try {
+      const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
+      product = FALLBACK_PRODUCTS.find(p => p.slug === slug) as any
+    } catch (e) {
+      console.error('Fallback failed:', e)
+    }
+  }
+
+  if (!product) {
     notFound()
   }
 
   // Fetch related products with error handling
-  let relatedProducts: Array<{
-    id: string
-    name: string
-    slug: string
-    price: number
-    image: string
-    rating: number
-    reviewCount: number
-  }> = []
-  
+  let relatedProducts: any[] = []
+
   try {
     relatedProducts = await prisma.product.findMany({
       where: {
@@ -111,20 +110,26 @@ export default async function ProductPage({ params }: Props) {
     })
   } catch (error) {
     console.error('Error fetching related products:', error)
-    // Continue without related products rather than failing
+    // Try fallback related products
+    try {
+      const { FALLBACK_PRODUCTS } = await import('@/lib/db/fallbacks')
+      relatedProducts = FALLBACK_PRODUCTS.filter(p => p.categoryId === product!.categoryId && p.id !== product!.id).slice(0, 4)
+    } catch {
+      relatedProducts = []
+    }
   }
 
   // Parse images from JSON string
   let galleryImages: string[] = []
   try {
-    const parsedImages = typeof product.images === 'string' 
-      ? JSON.parse(product.images) 
+    const parsedImages = typeof product.images === 'string'
+      ? JSON.parse(product.images)
       : product.images
     galleryImages = Array.isArray(parsedImages) && parsedImages.length > 0
       ? parsedImages
-      : [product.image, product.image, product.image].filter(Boolean)
+      : [product.image, product.image, product.image].filter(Boolean) as string[]
   } catch {
-    galleryImages = [product.image, product.image, product.image].filter(Boolean)
+    galleryImages = [product.image, product.image, product.image].filter(Boolean) as string[]
   }
 
   return (
@@ -135,7 +140,7 @@ export default async function ProductPage({ params }: Props) {
           items={[
             { label: "Accueil", href: "/" },
             { label: "Boutique", href: "/shop" },
-            { label: product.category.name, href: `/shop?category=${product.category.slug}` },
+            { label: product.category?.name || "Catégorie", href: `/shop?category=${product.category?.slug || ''}` },
             { label: product.name, href: "#" },
           ]}
         />
@@ -146,7 +151,7 @@ export default async function ProductPage({ params }: Props) {
           <ProductGallery images={galleryImages} productName={product.name} />
 
           {/* Right: Product Info */}
-          <ProductInfo product={product} />
+          <ProductInfo product={product as any} />
         </div>
 
         {/* Reviews Section */}

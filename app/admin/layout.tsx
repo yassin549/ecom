@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     // Check if user is authenticated
     const adminSession = localStorage.getItem("admin_session")
-    
+
     if (!adminSession && pathname !== "/admin/login") {
       router.push("/admin/login")
     } else {
@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-60 bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">Admin</h1>
+          <h1 className="text-xl font-black italic uppercase tracking-tighter text-gray-900">Drip Shop</h1>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-lg hover:bg-gray-100"
@@ -87,13 +87,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-gray-200">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">S</span>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(147,51,234,0.3)]">
+                <span className="text-white font-black italic text-xl">D</span>
               </div>
               <div>
-                <div className="font-bold text-gray-900">ShopHub</div>
-                <div className="text-xs text-gray-600">Administration</div>
+                <div className="font-black italic uppercase tracking-tighter text-gray-900">Drip <span className="text-primary">Shop</span></div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Administration</div>
               </div>
             </Link>
           </div>
@@ -108,11 +108,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link key={item.href} href={item.href}>
                   <motion.div
                     whileHover={{ x: 4 }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-indigo-50 text-indigo-600"
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
+                        ? "bg-primary/10 text-primary border border-primary/20"
                         : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.name}</span>
@@ -124,7 +123,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Logout */}
           <div className="p-4 border-t border-gray-200">
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
             >

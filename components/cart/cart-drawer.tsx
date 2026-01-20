@@ -19,7 +19,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const removeItem = useCartStore((state) => state.removeItem)
   const updateQuantity = useCartStore((state) => state.updateQuantity)
   const getTotalPrice = useCartStore((state) => state.getTotalPrice)
-  
+
   const [deletedItem, setDeletedItem] = useState<any>(null)
   const [undoTimeout, setUndoTimeout] = useState<NodeJS.Timeout | null>(null)
 
@@ -97,9 +97,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors border border-gray-200 sm:border-transparent"
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6 text-black" />
               </motion.button>
             </div>
 
