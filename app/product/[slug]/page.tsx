@@ -49,6 +49,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: "Produit - Drip Shop",
       description: "Découvrez nos produits",
     }
+  } catch (error) {
+    return {
+      title: "Drip Shop",
+      description: "Streetwear Premium",
+    }
   }
 }
 
